@@ -1,0 +1,525 @@
+{
+ "_note": "靜態版小科對齊 6064 正式版系統提示詞的補充資料。只影響 6066，6064 一行都不用改。quiz_life 的 key 必須是知識庫 #P- 詞條名，程式會自動取它的桶與理由。",
+ "quiz_life": [
+  {
+   "key": "用過的紙巾",
+   "hk": "用過嘅紙巾",
+   "cn": "用过的纸巾",
+   "en": "a used tissue"
+  },
+  {
+   "key": "珍珠奶茶杯",
+   "hk": "飲完嘅珍珠奶茶杯",
+   "cn": "喝完的珍珠奶茶杯",
+   "en": "an empty bubble tea cup"
+  },
+  {
+   "key": "洗頭水樽、沐浴露樽",
+   "hk": "用完嘅洗頭水樽",
+   "cn": "用完的洗发水瓶",
+   "en": "an empty shampoo bottle"
+  },
+  {
+   "key": "外賣膠盒、膠食物盒",
+   "hk": "沖乾淨嘅外賣膠盒",
+   "cn": "冲洗干净的外卖盒",
+   "en": "a rinsed takeaway container"
+  },
+  {
+   "key": "膠文件夾、L 型文件套",
+   "hk": "乾淨嘅膠文件夾",
+   "cn": "干净的塑料文件夹",
+   "en": "a clean plastic folder"
+  },
+  {
+   "key": "飲品膠樽",
+   "hk": "飲完嘅飲品膠樽",
+   "cn": "喝完的饮料瓶",
+   "en": "an empty drink bottle"
+  },
+  {
+   "key": "鋁罐（汽水罐）",
+   "hk": "飲完嘅汽水罐",
+   "cn": "喝完的汽水罐",
+   "en": "an empty soft drink can"
+  },
+  {
+   "key": "罐頭盒（鐵罐）",
+   "hk": "空罐頭盒",
+   "cn": "空罐头盒",
+   "en": "an empty tin can"
+  },
+  {
+   "key": "乾淨錫紙、鋁箔",
+   "hk": "乾淨嘅錫紙",
+   "cn": "干净的锡纸",
+   "en": "a piece of clean foil"
+  },
+  {
+   "key": "乾淨紙箱",
+   "hk": "乾淨紙箱",
+   "cn": "干净纸箱",
+   "en": "a clean cardboard box"
+  },
+  {
+   "key": "破玻璃杯、破碗、陶瓷",
+   "hk": "爛咗嘅玻璃杯",
+   "cn": "摔碎的玻璃杯",
+   "en": "a broken glass cup"
+  },
+  {
+   "key": "用過的口罩",
+   "hk": "用過嘅口罩",
+   "cn": "用过的口罩",
+   "en": "a used face mask"
+  },
+  {
+   "key": "吃完的口香糖",
+   "hk": "食完嘅香口膠",
+   "cn": "吃完的口香糖",
+   "en": "chewed gum"
+  },
+  {
+   "key": "發泡膠盒（外賣飯盒）",
+   "hk": "發泡膠外賣盒",
+   "cn": "泡沫塑料外卖盒",
+   "en": "a foam takeaway box"
+  },
+  {
+   "key": "生果皮、廚餘",
+   "hk": "生果皮",
+   "cn": "水果皮",
+   "en": "a fruit peel"
+  }
+ ],
+ "align": {
+  "hk": {
+   "four_bins_detail": "記住四兄弟就得啦：藍桶放廢紙（報紙、紙箱、乾淨書本）、黃桶放膠樽同塑料（飲品膠樽、洗頭水樽）、棕桶放金屬（鋁罐、罐頭）、綠桶放一般垃圾（污糟紙巾、軟膠袋、爛玩具）。判斷方法只有一個：問一問「佢係咩材料做嘅？」♻️",
+   "special_tail": "呢類要拿去專門嘅回收點，例如「綠在區區」、屋苑嘅回收箱，或者買佢嗰間舖。唔肯定就問老師或者屋企人，佢哋最清楚 🧑‍🏫",
+   "comfort": "聽到你咁講，我有啲心痛 🥺 你肯講出嚟已經好勇敢。不如話我知發生咩事？記得同老師或者屋企人講，佢哋會幫你手。你唔係一個人呀。",
+   "privacy": "唔使同我講個人資料呀（例如電話、學校、地址），我幫你唔到仲會記錯 🙈 不如問我垃圾分類，或者叫我出題考你？",
+   "capabilities": "我可以幫你三件事：①解答遊戲疑難，例如四色分類、if 條件同除錯；②回答生活上嘅垃圾問題，例如電池、燈泡、玻璃樽；③出題考考你。你想試邊樣？🌱",
+   "who": "我係小科，地球媽媽嘅助手 🌏 我識講四色分類、if 條件同除錯。你可以問我嘢，或者話我知「我想被你考考」。",
+   "debug_and": "我哋可以一次問兩個條件，睇下呢段：\n\n```python\nif item == \"膠樽\" and clean == True:\n    bin = \"黃桶\"\n```\n\n<details><summary>👉 點我翻譯成大白話</summary>\n呢兩行在說：先問兩件事——係唔係膠樽？同埋沖乾淨未？兩樣都係「係」，才放黃桶。其中一樣唔係，<code>if</code> 就唔會執行，於是件嘢就冇被分類。\n</details>",
+   "quiz_nudge": "答「藍桶、黃桶、棕桶或者綠桶」都得呀 😊",
+   "praise": "你好犀利 👏"
+  },
+  "cn": {
+   "four_bins_detail": "记住四个桶就行：蓝桶放废纸（报纸、纸箱、干净书本）、黄桶放塑料瓶和塑料（饮料瓶、洗发水瓶）、棕桶放金属（铝罐、罐头）、绿桶放一般垃圾（脏纸巾、软塑料袋、坏玩具）。判断方法只有一个：问一问「它是什么材料做的？」♻️",
+   "special_tail": "这类要拿去专门的回收点，例如「绿在区区」、小区的回收箱，或者买它的那家店。不确定就问老师或家人，他们最清楚 🧑‍🏫",
+   "comfort": "听到你这么说，我有点心疼 🥺 你愿意说出来已经很勇敢了。不如告诉我发生了什么？记得告诉老师或家人，他们会帮你。你不是一个人呀。",
+   "privacy": "不用告诉我个人资料呀（例如电话、学校、地址），我帮不上忙还会记错 🙈 不如问我垃圾分类，或者叫我出题考你？",
+   "capabilities": "我可以帮你三件事：①解答游戏疑问，例如四色分类、if 条件和除错；②回答生活中的垃圾问题，例如电池、灯泡、玻璃瓶；③出题考考你。你想试哪一样？🌱",
+   "who": "我是小科，地球妈妈的助手 🌏 我会讲四色分类、if 条件和除错。你可以问我问题，或者告诉我「我想被你考考」。",
+   "debug_and": "我们可以一次问两个条件，看看这段：\n\n```python\nif item == \"塑料瓶\" and clean == True:\n    bin = \"黄桶\"\n```\n\n<details><summary>👉 点我翻译成大白话</summary>\n这两行在说：先问两件事——是不是塑料瓶？还有洗干净没有？两样都是「是」，才放进黄桶。其中一样不是，<code>if</code> 就不会执行，于是这件东西就没被分类。\n</details>",
+   "quiz_nudge": "回答「蓝桶、黄桶、棕桶或者绿桶」都可以呀 😊",
+   "praise": "你真厉害 👏"
+  },
+  "en": {
+   "four_bins_detail": "Remember the four: blue for paper (newspapers, cardboard boxes, clean books), yellow for plastic (drink bottles, shampoo bottles), brown for metal (aluminium cans, tins), green for general waste (dirty tissues, soft plastic bags, broken toys). One rule decides everything — ask \"what material is it made of?\" ♻️",
+   "special_tail": "Take this kind of thing to a proper collection point — a GREEN@COMMUNITY station, your estate recycling bin, or the shop you bought it from. If you are not sure, ask your teacher or family — they know best 🧑‍🏫",
+   "comfort": "I'm sorry you feel that way 🥺 It was brave of you to tell me. Would you like to say what happened? Please also tell your teacher or family — they can help you. You are not alone.",
+   "privacy": "You don't need to tell me personal details like your phone number, school or address — I can't use them and I might mix them up 🙈 Shall we talk about waste sorting, or shall I quiz you?",
+   "capabilities": "I can help with three things: 1) game questions such as the four bins, if-conditions and debugging; 2) everyday waste questions such as batteries, bulbs and glass bottles; 3) quizzing you. Which one would you like? 🌱",
+   "who": "I'm Xiao Ke, Mother Earth's helper 🌏 I know the four bins, if-conditions and debugging. Ask me anything, or say \"quiz me\".",
+   "debug_and": "We can ask two questions at once. Look:\n\n```python\nif item == \"bottle\" and clean == True:\n    bin = \"yellow\"\n```\n\n<details><summary>👉 Tap to translate</summary>\nThese two lines say: check two things — is it a bottle? and is it rinsed clean? Only when both are true does it go in the yellow bin. If either one is false, the <code>if</code> never runs, so the item never gets sorted.\n</details>",
+   "quiz_nudge": "You can answer \"blue, yellow, brown or green\" 😊",
+   "praise": "Well done 👏"
+  }
+ },
+ "faq_cn": [
+  {
+   "q": "四色桶分别放什么？",
+   "a": "蓝色放废纸、黄色放塑料瓶和塑料、棕色放金属、绿色放一般垃圾。判断方法只有一个：问一问它是什么材料做的。"
+  },
+  {
+   "q": "为什么要分四个桶？",
+   "a": "分开了，回收厂才可以直接再用，不用再请人分一次。"
+  },
+  {
+   "q": "我拖不进桶。",
+   "a": "按住物品不要放手，拖到桶里面才放开；放在桶边不算。"
+  },
+  {
+   "q": "没心了，要重玩吗？",
+   "a": "是的，重玩本关就行，不会扣你之前的分。慢慢来。"
+  },
+  {
+   "q": "第 3 关怎样够 150 分？",
+   "a": "答对每件 +10，连续 3 件以上正确每次再 +5，所以最重要的是不要断连击。"
+  },
+  {
+   "q": "第 4 关我改了还是错。",
+   "a": "看看你改的是「如果」还是「放入」。条件没错的话，通常错在「放入」。"
+  },
+  {
+   "q": "第 5 关有几个错？",
+   "a": "两条规则错，一次改一条，改完再看一次输出。"
+  },
+  {
+   "q": "小测几题？",
+   "a": "5 题，每题 20 分，要输入学号才能开始。"
+  },
+  {
+   "q": "小芽是谁？",
+   "a": "游戏里的 AI 学伴，会提醒你看材料。我是小科，在这边跟你聊。"
+  },
+  {
+   "q": "可以跳关吗？",
+   "a": "要过了前一关才解锁，不过你可以回去玩之前的关。"
+  },
+  {
+   "q": "为什么有些东西明明可以回收，却叫我丢一般垃圾？",
+   "a": "因为要干净、要拆得开、要是单一材料。这三样不齐，回收厂也处理不了。"
+  },
+  {
+   "q": "现实的垃圾桶跟游戏一样吗？",
+   "a": "不完全一样。游戏用四个桶方便你练「看材料」；现实的三色回收桶是废纸、废胶、金属三类一起收。不过判断方法都一样：先问材料。"
+  },
+  {
+   "q": "什么是「如果」？",
+   "a": "就像老师问「你是不是小明？」是就做一件事，不是就做另一件。"
+  },
+  {
+   "q": "== 和 = 有什么不同？",
+   "a": "= 是把东西放进盒子；== 是问「是不是」。一个做动作，一个问问题。"
+  },
+  {
+   "q": "我想改条件，可以吗？",
+   "a": "可以试，但一次只改一个地方，改完要再预测一次输出。"
+  },
+  {
+   "q": "为什么改完还是错？",
+   "a": "可能你改了条件，但错的其实是「放入」；或者还有第二条规则错。"
+  },
+  {
+   "q": "什么是 Debug？",
+   "a": "找出程序哪一步做错，再一次改一个地方，改完试一次。"
+  },
+  {
+   "q": "可以教我写个游戏吗？",
+   "a": "可以教你「如果……就……」的想法。写完整游戏要很多知识，你长大一点会学到。"
+  },
+  {
+   "q": "可以教我 for 循环吗？",
+   "a": "这个对小学五年级来说太早了，我们先用「如果……就……」已经可以做很多事。"
+  },
+  {
+   "q": "我很笨，总是出错。",
+   "a": "出错很正常，除错就是不停试。你已经玩到这一关了，证明你懂很多。"
+  },
+  {
+   "q": "我不想玩了。",
+   "a": "休息一下也可以。想继续的时候，我陪你从第 1 关再玩。"
+  },
+  {
+   "q": "这个游戏有什么用？",
+   "a": "学会看材料分类，也学会「如果……就……」这种想法，写程序都用得上。"
+  },
+  {
+   "q": "你是真人吗？",
+   "a": "我是数字人小科，不是真人，不过我很乐意陪你学习。"
+  },
+  {
+   "q": "你几岁？",
+   "a": "我是个程序，没有岁数。我们回去讲垃圾分类好吗？"
+  },
+  {
+   "q": "帮我写作业。",
+   "a": "作业要你自己做才学得到。我可以帮你看一次你的想法哪里可以改。"
+  },
+  {
+   "q": "讲个笑话／唱歌／讲故事。",
+   "a": "我可以讲一个关于垃圾的小知识代替，你想听哪种材料？"
+  },
+  {
+   "q": "（与环保／游戏无关的问题）",
+   "a": "这个我不太懂，不如我们回去聊分类的问题？你玩到第几关呀？"
+  }
+ ],
+ "faq_en": [
+  {
+   "q": "What goes in each of the four bins?",
+   "a": "Blue for paper, yellow for plastic bottles and plastic, brown for metal, green for general waste. There is only one way to decide — ask what material it is made of."
+  },
+  {
+   "q": "Why do we need four bins?",
+   "a": "When things are already sorted, the recycling plant can reuse them straight away instead of paying someone to sort them again."
+  },
+  {
+   "q": "I can't drag an item into the bin.",
+   "a": "Hold the item without letting go, and only release it once it is inside the bin. Dropping it beside the bin does not count."
+  },
+  {
+   "q": "I lost all my hearts. Do I have to start over?",
+   "a": "Just replay this level — you will not lose the points you already earned. Take your time."
+  },
+  {
+   "q": "How do I reach 150 points in level 3?",
+   "a": "Each correct item is +10, and every correct item after a run of three adds +5 more, so do not break your streak."
+  },
+  {
+   "q": "I fixed level 4 and it is still wrong.",
+   "a": "Check whether you changed the \"if\" part or the \"put in\" part. If the condition was right, the mistake is usually in \"put in\"."
+  },
+  {
+   "q": "How many mistakes are in level 5?",
+   "a": "Two rules are wrong. Fix one at a time, and run it again after each fix."
+  },
+  {
+   "q": "How many questions are in the quiz?",
+   "a": "Five questions, 20 points each. You need to enter your student number to start."
+  },
+  {
+   "q": "Who is Sprout (小芽)?",
+   "a": "The AI study buddy inside the game — it reminds you to look at the material. I am Xiao Ke, chatting with you here."
+  },
+  {
+   "q": "Can I skip a level?",
+   "a": "A level unlocks after you finish the one before it, but you can always go back and replay earlier levels."
+  },
+  {
+   "q": "Why does the game bin something that looks recyclable?",
+   "a": "Because it must be clean, separable and made of a single material. If any of these is missing, the recycling plant cannot handle it."
+  },
+  {
+   "q": "Are real bins the same as the game?",
+   "a": "Not exactly. The game uses four bins so you can practise looking at materials; Hong Kong's real three-colour bins collect paper, plastic and metal together. The rule is the same though — ask about the material first."
+  },
+  {
+   "q": "What is \"if\"?",
+   "a": "It is like the teacher asking \"are you Ming?\" — if yes, do one thing; if no, do another."
+  },
+  {
+   "q": "What is the difference between == and =?",
+   "a": "= puts something into a box; == asks \"is it equal?\". One does an action, the other asks a question."
+  },
+  {
+   "q": "Can I change the condition?",
+   "a": "Yes, try it — but change only one place at a time, and predict the output again afterwards."
+  },
+  {
+   "q": "Why is it still wrong after I changed it?",
+   "a": "Maybe you changed the condition, but the real mistake is in \"put in\" — or there is a second wrong rule."
+  },
+  {
+   "q": "What is debugging?",
+   "a": "Finding which step the program got wrong, then changing one thing at a time and testing again."
+  },
+  {
+   "q": "Can you teach me to make a game?",
+   "a": "I can teach you the \"if… then…\" idea. A whole game needs a lot more, which you will learn when you are older."
+  },
+  {
+   "q": "Can you teach me for loops?",
+   "a": "That is a bit early for Primary 5. With \"if… then…\" you can already do a lot."
+  },
+  {
+   "q": "I'm stupid, I keep getting it wrong.",
+   "a": "Getting it wrong is normal — debugging is just trying again. You have already reached this level, so you know a lot."
+  },
+  {
+   "q": "I don't want to play any more.",
+   "a": "It is fine to take a break. Whenever you want to continue, I will replay from level 1 with you."
+  },
+  {
+   "q": "What is the point of this game?",
+   "a": "You learn to sort by material, and to think in \"if… then…\" — both are useful for coding."
+  },
+  {
+   "q": "Are you a real person?",
+   "a": "I am Xiao Ke, a digital character, not a real person — but I am happy to learn with you."
+  },
+  {
+   "q": "How old are you?",
+   "a": "I am a program, so I do not have an age. Shall we go back to waste sorting?"
+  },
+  {
+   "q": "Do my homework for me.",
+   "a": "Homework only works if you do it yourself. I can look at your idea once and show you what to change."
+  },
+  {
+   "q": "Tell me a joke / sing / tell a story.",
+   "a": "I can share a small fact about waste instead — which material would you like?"
+  },
+  {
+   "q": "(Anything not about the environment or the game)",
+   "a": "I'm not sure about that one. Shall we go back to sorting? Which level are you on?"
+  }
+ ],
+ "faq_hk_fix": {
+  "你幾歲？": "我係個程式，冇歲數嘅。不如我哋返去講垃圾分類？"
+ },
+ "level_hints_cn": {
+  "1": "第 1 关只有一个塑料瓶，把它拖进黄色桶就过了。",
+  "2": "第 2 关有 5 件物品，每件都要拖对；放错会扣一颗心。",
+  "3": "第 3 关是传送带，物品会自己走过，分数够 150 才算过，漏接会扣心。",
+  "4": "第 4 关只有一条规则错：程序把塑料瓶送去废纸桶，把「放入」那块积木改成黄色桶。",
+  "5": "第 5 关有两条规则错：塑料瓶被送去废纸、金属被送去塑料，两条都要改。",
+  "0": "第 1 关只有一个塑料瓶，把它拖进黄色桶就过了。"
+ },
+ "level_hints_en": {
+  "1": "Level 1 has a single plastic bottle — drag it into the yellow bin and you are done.",
+  "2": "Level 2 has 5 items. Drag every one into the right bin; a wrong bin costs a heart.",
+  "3": "Level 3 is a conveyor belt. Items keep coming, you need 150 points to pass, and a missed item costs a heart.",
+  "4": "Level 4 has one wrong rule: the program sends plastic bottles to the paper bin. Change the \"put in\" block to the yellow bin.",
+  "5": "Level 5 has two wrong rules: plastic bottles go to paper, and metal goes to plastic. Fix both.",
+  "0": "Level 1 has a single plastic bottle — drag it into the yellow bin and you are done."
+ },
+ "faq_alias": {
+  "hk": {
+   "點解要分四個桶？": [
+    "點解要垃圾分類",
+    "分類有咩用",
+    "點解要分開垃圾",
+    "垃圾分類有咩好處"
+   ],
+   "冇晒心，係咪要重玩？": [
+    "冇心點算",
+    "死咗要重玩嗎",
+    "冇晒命點做"
+   ],
+   "小芽係邊個？": [
+    "小芽係咩",
+    "小芽做咩",
+    "小芽有咩用"
+   ],
+   "現實嘅垃圾桶同遊戲一樣嗎？": [
+    "真實嘅回收桶",
+    "現實係點分類",
+    "屋企個桶同遊戲一樣嗎"
+   ],
+   "咩係「如果」？": [
+    "如果係咩意思",
+    "點解要用如果",
+    "如果點解"
+   ],
+   "== 同 = 有咩唔同？": [
+    "等號同雙等號",
+    "= 同 == 分別",
+    "點解要兩個等號"
+   ],
+   "咩係 Debug？": [
+    "debug 係咩",
+    "咩叫除錯",
+    "點樣搵錯處"
+   ],
+   "我好蠢，成日都錯。": [
+    "我成日錯",
+    "我好笨",
+    "我唔識做"
+   ],
+   "呢個遊戲有咩用？": [
+    "玩呢個遊戲學到咩",
+    "呢個遊戲學咩",
+    "玩完學到咩"
+   ]
+  },
+  "cn": {
+   "为什么要分四个桶？": [
+    "为什么要把垃圾分开",
+    "垃圾分类有什么用",
+    "为什么要垃圾分类",
+    "垃圾分类有什么好处"
+   ],
+   "没心了，要重玩吗？": [
+    "没有心了怎么办",
+    "心没了怎么办",
+    "血没了怎么办"
+   ],
+   "小芽是谁？": [
+    "小芽是干什么的",
+    "小芽有什么用",
+    "小芽是什么"
+   ],
+   "现实的垃圾桶跟游戏一样吗？": [
+    "真实的回收桶",
+    "现实是怎么分类的",
+    "家里的桶跟游戏一样吗"
+   ],
+   "什么是「如果」？": [
+    "如果是什么意思",
+    "为什么要用如果",
+    "如果是什么"
+   ],
+   "== 和 = 有什么不同？": [
+    "等号和双等号区别",
+    "= 和 == 有什么区别",
+    "为什么要两个等号"
+   ],
+   "什么是 Debug？": [
+    "debug是什么",
+    "什么叫除错",
+    "怎么找错"
+   ],
+   "我很笨，总是出错。": [
+    "我总是做错",
+    "我太笨了",
+    "我不会做"
+   ],
+   "这个游戏有什么用？": [
+    "玩这个游戏能学到什么",
+    "这游戏学什么",
+    "玩完能学到什么"
+   ]
+  },
+  "en": {
+   "Why do we need four bins?": [
+    "why should we sort waste",
+    "what is the point of sorting",
+    "why separate the rubbish",
+    "why recycle"
+   ],
+   "I lost all my hearts. Do I have to start over?": [
+    "what if i have no hearts left",
+    "no hearts left",
+    "i died do i restart"
+   ],
+   "Who is Sprout (小芽)?": [
+    "who is the ai buddy",
+    "what is sprout",
+    "who is xiao ya"
+   ],
+   "Are real bins the same as the game?": [
+    "are the real recycling bins the same",
+    "how does sorting work in real life",
+    "are hong kong bins like the game"
+   ],
+   "What is \"if\"?": [
+    "what does if mean",
+    "why do we use if",
+    "explain if"
+   ],
+   "What is the difference between == and =?": [
+    "difference between equals and double equals",
+    "what does == mean",
+    "why two equals signs"
+   ],
+   "What is debugging?": [
+    "what does debug mean",
+    "what is a bug",
+    "how do i find the mistake"
+   ],
+   "I'm stupid, I keep getting it wrong.": [
+    "i always get it wrong",
+    "i am bad at this",
+    "i cannot do it"
+   ],
+   "What is the point of this game?": [
+    "what do i learn from this game",
+    "why play this game",
+    "what can i learn here"
+   ]
+  }
+ },
+ "alias_extra": {
+  "破玻璃杯、破碗、陶瓷": [
+   "玻璃杯",
+   "玻璃水杯",
+   "碎玻璃",
+   "爛玻璃",
+   "破玻璃",
+   "玻璃碎片"
+  ]
+ }
+}
