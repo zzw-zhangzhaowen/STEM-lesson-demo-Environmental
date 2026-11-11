@@ -115,6 +115,46 @@
     width: 1280px; height: 720px;
     border: 0; transform-origin: top left;
   }
+
+  /* ---------- 全螢幕：原生 API 與手機降級（CSS 沉浸）共用一套外觀 ---------- */
+  .game-box:fullscreen,
+  .game-box:-webkit-full-screen {
+    width: 100vw; height: 100vh; margin: 0; border-radius: 0;
+    background: #0a1a17;
+  }
+  body.pseudo-full { overflow: hidden; }
+  body.pseudo-full .game-box {
+    position: fixed; inset: 0; z-index: 9998;
+    width: 100%; height: 100vh; height: 100dvh;
+    margin: 0; border-radius: 0; background: #0a1a17;
+    aspect-ratio: auto; flex: 0 0 auto;
+  }
+  /* 進入全螢幕後給一個明確的出口：手機沒有 Esc 鍵 */
+  .fs-exit {
+    position: absolute; z-index: 21; display: none;
+    align-items: center; gap: 6px;
+    right: calc(12px + env(safe-area-inset-right, 0px));
+    top: calc(12px + env(safe-area-inset-top, 0px));
+    padding: 9px 15px; border-radius: 999px; cursor: pointer;
+    border: 1px solid rgba(255,255,255,.32);
+    background: rgba(8,26,22,.72); color: #eaf6ee;
+    font: 600 13px/1 inherit; -webkit-backdrop-filter: blur(6px);
+    backdrop-filter: blur(6px); transition: background .15s;
+  }
+  .fs-exit:hover, .fs-exit:active { background: rgba(8,26,22,.92); }
+  body.in-full .fs-exit,
+  .game-box:fullscreen .fs-exit,
+  .game-box:-webkit-full-screen .fs-exit { display: inline-flex; }
+  .fs-tip {
+    position: absolute; z-index: 21; display: none; left: 50%; transform: translateX(-50%);
+    bottom: calc(18px + env(safe-area-inset-bottom, 0px));
+    padding: 8px 14px; border-radius: 999px; pointer-events: none;
+    background: rgba(8,26,22,.72); color: #d8ecdf; font-size: 12px; white-space: nowrap;
+  }
+  @media (orientation: portrait) {
+    body.in-full .fs-tip { display: block; }
+  }
+  body.in-full.rotate-game .fs-tip { display: block; }
   .game-hint {
     flex: 0 0 auto; margin: 0 12px 10px; font-size: 12px; color: var(--muted);
   }
@@ -335,6 +375,8 @@
       </div>
       <iframe id="gameFrame" src="game/index.html" title="地球媽媽拯救大作戰"
               allow="fullscreen; autoplay; clipboard-write"></iframe>
+      <button class="fs-exit" id="btnFullExit" type="button">退出全螢幕 ✕</button>
+      <div class="fs-tip" id="fsTip">建議橫放手機，畫面會更大 ↻</div>
     </div>
     <p class="game-hint" id="gameHint">
       提示：先點一下遊戲畫面，鍵盤才會生效 — <kbd>P</kbd> 暫停 ·
@@ -390,6 +432,8 @@ const I18N = {
     gameSub: "第 0–4 關 · 課後小測",
     reload: "重新載入",
     full: "全螢幕",
+    fullExit: "退出全螢幕 ✕",
+    rotTip: "畫面已轉向：把手機橫放，遊戲就會填滿全屏 ↻",
     help: "玩法說明",
     loading: "正在準備地球媽媽的遊戲世界…（首次載入約 10–20 秒）",
     gameHint: "提示：先點一下遊戲畫面，鍵盤才會生效 — <kbd>P</kbd> 暫停 · <kbd>R</kbd> 重玩 · <kbd>Esc</kbd> 返回選關。不懂就問右下角的小科 🌏",
@@ -443,6 +487,8 @@ const I18N = {
     gameSub: "第 0–4 关 · 课后小测",
     reload: "重新加载",
     full: "全屏",
+    fullExit: "退出全屏 ✕",
+    rotTip: "画面已转向：横放手机，游戏就会铺满全屏 ↻",
     help: "玩法说明",
     loading: "正在准备地球妈妈的游戏世界…（首次加载约 10–20 秒）",
     gameHint: "提示：先点一下游戏画面，键盘才会生效 — <kbd>P</kbd> 暂停 · <kbd>R</kbd> 重玩 · <kbd>Esc</kbd> 返回选关。不懂就问右下角的小科 🌏",
@@ -494,6 +540,8 @@ const I18N = {
     gameSub: "Levels 0–4 · End-of-lesson quiz",
     reload: "Reload",
     full: "Fullscreen",
+    fullExit: "Exit ✕",
+    rotTip: "Rotated: turn your phone sideways to fill the screen ↻",
     help: "How to play",
     loading: "Getting Mother Earth's world ready… (about 10–20 seconds the first time)",
     gameHint: "Tip: click the game area once so the keyboard works — <kbd>P</kbd> pause · <kbd>R</kbd> replay · <kbd>Esc</kbd> back to levels. Stuck? Ask Xiao Ke 🌏",
@@ -622,7 +670,10 @@ function applyLang(code, opts) {
   $('gameTitle').textContent = T('gameTitle');
   $('gameSub').textContent = T('gameSub');
   $('btnReload').textContent = T('reload');
-  $('btnFull').textContent = T('full');
+  const fsOn = document.body.classList.contains('in-full');
+  $('btnFull').textContent = T(fsOn ? 'fullExit' : 'full');
+  $('btnFullExit').textContent = T('fullExit');
+  $('fsTip').textContent = T('rotTip');
   $('btnHelp').textContent = T('help');
   $('loaderText').textContent = T('loading');
   $('gameHint').innerHTML = T('gameHint');
@@ -661,10 +712,26 @@ document.querySelectorAll('#langSwitch button').forEach((btn) => {
    ========================================================================= */
 const W = 1280, H = 720;
 
-/* 把 1280×720 的遊戲畫面等比縮放到容器內（不裁切、不留黑邊）。 */
+/* 把 1280×720 的遊戲畫面等比縮放到容器內（不裁切、不留黑邊）。
+   全螢幕＋豎屏時，16:9 只會在中間變成一條扁帶（390×219），跟原本差不多大，
+   所以這時把畫面順時針轉 90°，讓它先佔滿屏幕，學生把手機橫放就自然接回正常方向。 */
 function fitGame() {
   const box = gameBox.getBoundingClientRect();
   if (!box.width || !box.height) return;
+
+  const portrait = box.height > box.width * 1.2;
+  const rotate = inFullMode() && portrait;
+  document.body.classList.toggle('rotate-game', rotate);
+
+  if (rotate) {
+    const s = Math.min(box.width / H, box.height / W);
+    /* 旋轉後內容佔 x ∈ [-H·s, 0]、y ∈ [0, W·s]，平移把它擺到正中 */
+    const tx = (box.width + H * s) / 2;
+    const ty = (box.height - W * s) / 2;
+    gameFrame.style.transform = `translate(${tx}px, ${ty}px) rotate(90deg) scale(${s})`;
+    return;
+  }
+
   const scale = Math.min(box.width / W, box.height / H);
   const dx = (box.width - W * scale) / 2;
   const dy = (box.height - H * scale) / 2;
@@ -712,10 +779,84 @@ $('btnReload').addEventListener('click', () => {
   setTimeout(() => loader.classList.add('done'), 1200);
 });
 
-/* 全螢幕只放大遊戲區，不會影響右邊的小科 */
+/* 全螢幕只放大遊戲區，不會影響右邊的小科。
+   手機（特別是 iPhone 的 Safari）不支援對任意 <div> 呼叫 Fullscreen API，
+   呼叫不存在的方法時整句會被 optional chaining 短路、錯誤又被 catch 吃掉，
+   表面現象就是「點全螢幕完全沒反應」。所以這裡做三層：
+   1) 標準 API → 2) webkit/ms 前綴 → 3) 全部失敗就用 CSS 沉浸模式（fixed 鋪滿畫面）。 */
+/* 用 var 而不是 let：上面的 fitGame() 一開頁就會執行並呼叫 inFullMode()，
+   若這裡是 let，讀取時會落在 TDZ 直接報錯。 */
+var pseudoFull = false;
+
+function fsElement() {
+  return document.fullscreenElement || document.webkitFullscreenElement
+      || document.msFullscreenElement || null;
+}
+function inFullMode() { return !!(fsElement() || pseudoFull); }
+
+function setPseudoFull(on) {
+  pseudoFull = on;
+  document.body.classList.toggle('pseudo-full', on);
+  document.body.classList.toggle('in-full', on);
+  $('btnFull').textContent = T(on ? 'fullExit' : 'full');
+  setTimeout(fitGame, 60);
+  setTimeout(fitGame, 360);      // 手機地址欄收合後再校正一次
+}
+
+function syncFullUI() {
+  const on = inFullMode();
+  document.body.classList.toggle('in-full', on);
+  $('btnFull').textContent = T(on ? 'fullExit' : 'full');
+  setTimeout(fitGame, 120);
+}
+
+function enterFull() {
+  const el = gameBox;
+  if (el.webkitRequestFullscreen === undefined && el.requestFullscreen === undefined
+      && el.msRequestFullscreen === undefined) {
+    setPseudoFull(true);
+    return;
+  }
+  const req = el.requestFullscreen || el.webkitRequestFullscreen || el.msRequestFullscreen;
+  try {
+    const ret = req.call(el);
+    if (ret && typeof ret.then === 'function') {
+      ret.then(() => syncFullUI()).catch(() => setPseudoFull(true));
+    } else {
+      /* 舊 webkit 是同步的、回傳 undefined，稍後確認有沒有真的進去 */
+      setTimeout(() => { if (fsElement()) syncFullUI(); else setPseudoFull(true); }, 260);
+    }
+  } catch (err) {
+    setPseudoFull(true);
+  }
+}
+
+function exitFull() {
+  const el = fsElement();
+  if (el) {
+    const d = document;
+    try {
+      if (d.exitFullscreen) d.exitFullscreen();
+      else if (d.webkitExitFullscreen) d.webkitExitFullscreen();
+      else if (d.msExitFullscreen) d.msExitFullscreen();
+    } catch (err) { /* 交回給 UI 同步處理 */ }
+  }
+  if (pseudoFull) setPseudoFull(false);
+  setTimeout(fitGame, 200);
+}
+
 $('btnFull').addEventListener('click', () => {
-  if (document.fullscreenElement) document.exitFullscreen();
-  else gameBox.requestFullscreen?.().catch(() => {});
+  if (inFullMode()) exitFull(); else enterFull();
+});
+$('btnFullExit').addEventListener('click', exitFull);
+
+['fullscreenchange', 'webkitfullscreenchange', 'msfullscreenchange'].forEach((ev) => {
+  document.addEventListener(ev, () => { if (!pseudoFull) syncFullUI(); });
+});
+
+/* 手機沒有 Esc 鍵，但接外接鍵盤或桌面瀏覽器時仍然可用 */
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape' && pseudoFull) setPseudoFull(false);
 });
 
 /* 兩個彈窗：玩法說明、四色分類 */
