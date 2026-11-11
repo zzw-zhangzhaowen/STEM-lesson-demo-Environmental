@@ -29,6 +29,10 @@ jobs:
 
       - name: 設定 Pages
         uses: actions/configure-pages@v5
+        with:
+          # 第一次執行時 Pages 可能還是「未啟用」狀態，這裡自動開啟，
+          # 免得必須先去 Settings → Pages 手動點一次。
+          enablement: true
 
       - name: 打包網站（整份資料夾就是網站根目錄）
         uses: actions/upload-pages-artifact@v3
