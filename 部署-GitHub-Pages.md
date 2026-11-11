@@ -31,7 +31,7 @@ python -m http.server 8080
 
 ```bash
 cd D:/Wen/EduHK/6066/INT6066_FINAL
-git remote add origin https://github.com/<你的帳號>/INT6066_FINAL.git
+git remote add origin https://github.com/zzw-zhangzhaowen/STEM-lesson-demo-Environmental.git
 git branch -M main
 git push -u origin main
 ```
@@ -58,7 +58,7 @@ git push -u origin main
 完成後網址是：
 
 ```
-https://<你的帳號>.github.io/INT6066_FINAL/
+https://zzw-zhangzhaowen.github.io/STEM-lesson-demo-Environmental/
 ```
 
 ---

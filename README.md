@@ -48,13 +48,13 @@ python -m http.server 8080
 1. 在 GitHub 建一個 **public** 倉庫（免費 Pages 需要公開）。
 2. 把這個資料夾推上去（`git init` 已做好並有第一次提交）：
    ```bash
-   git remote add origin https://github.com/<你的帳號>/<倉庫名>.git
+   git remote add origin https://github.com/zzw-zhangzhaowen/STEM-lesson-demo-Environmental.git
    git branch -M main
    git push -u origin main
    ```
 3. 倉庫 → **Settings → Pages → Source 選「GitHub Actions」**。
    推送會自動觸發 `.github/workflows/pages.yml`，約 1 分鐘後得到
-   `https://<你的帳號>.github.io/<倉庫名>/`。
+   **https://zzw-zhangzhaowen.github.io/STEM-lesson-demo-Environmental/**
 
 ---
 
