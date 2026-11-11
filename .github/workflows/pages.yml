@@ -1,0 +1,40 @@
+name: 部署到 GitHub Pages
+
+# 這個站是純靜態（HTML/CSS/JS + pygbag 編譯好的 wasm），
+# 不需要伺服器、不需要 Python 執行環境，所以直接丟上 Pages 就能跑。
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:        # 也可以在 Actions 頁面手動觸發
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: 取得原始碼
+        uses: actions/checkout@v4
+
+      - name: 設定 Pages
+        uses: actions/configure-pages@v5
+
+      - name: 打包網站（整份資料夾就是網站根目錄）
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: .
+
+      - name: 發佈
+        id: deployment
+        uses: actions/deploy-pages@v4

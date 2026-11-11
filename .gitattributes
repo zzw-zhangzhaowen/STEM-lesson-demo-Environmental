@@ -1,0 +1,12 @@
+# 統一用 LF：這個站會部署到 Linux 環境（GitHub Pages），CRLF 會造成奇怪的差異
+* text=auto eol=lf
+
+# 二進位檔不要做換行轉換，否則檔案會壞
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.apk binary
+*.gz binary
+*.wasm binary

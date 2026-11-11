@@ -1,0 +1,21 @@
+# 不要把任何金鑰推上公開倉庫
+.env
+.env.*
+*.key
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# 系統與編輯器
+.DS_Store
+Thumbs.db
+desktop.ini
+.vscode/
+.idea/
+
+# 本機測試產物
+*.log
+_測試輸出/

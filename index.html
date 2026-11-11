@@ -1,0 +1,781 @@
+<!DOCTYPE html>
+<html lang="zh-Hant-HK">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>地球媽媽拯救大作戰 × 小科數字人</title>
+<style>
+  :root {
+    --green: #2f7a5b;
+    --green-dark: #1f5340;
+    --green-soft: #e4f1e8;
+    --cream: #fdfbf3;
+    --ink: #1e3a30;
+    --muted: #6d8a7e;
+    --line: #d6e6da;
+    --radius: 16px;
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0; height: 100%; overflow: hidden;
+    font-family: "Noto Sans TC", "Microsoft JhengHei", "PingFang TC", system-ui, sans-serif;
+    color: var(--ink);
+    background:
+      radial-gradient(1200px 500px at 15% -10%, #dff0e2 0%, transparent 60%),
+      radial-gradient(900px 420px at 100% 110%, #d9ecdf 0%, transparent 55%),
+      #eff6f0;
+  }
+
+  /* ---------- 頂欄 ---------- */
+  .topbar {
+    height: 60px; display: flex; align-items: center; justify-content: space-between;
+    padding: 0 18px; gap: 12px;
+  }
+  .brand { display: flex; align-items: center; gap: 10px; min-width: 0; }
+  .brand img {
+    width: 36px; height: 36px; border-radius: 50%; object-fit: cover;
+    border: 2px solid #fff; box-shadow: 0 2px 8px rgba(31,83,64,.18);
+  }
+  .brand .title { font-size: 17px; font-weight: 700; white-space: nowrap; }
+  .brand .title em { font-style: normal; color: var(--green); }
+  .brand .sub {
+    font-size: 12px; color: var(--muted); white-space: nowrap;
+    overflow: hidden; text-overflow: ellipsis;
+  }
+  .badges { display: flex; gap: 8px; align-items: center; }
+  .badge {
+    font-size: 12px; color: var(--green-dark); background: #fff;
+    border: 1px solid var(--line); border-radius: 999px; padding: 5px 11px;
+    white-space: nowrap;
+  }
+  /* 右上角的「四色分類」：看起來像徽章，但可以點開小百科 */
+  button.badge {
+    cursor: pointer; font-family: inherit; transition: .15s;
+  }
+  button.badge:hover { background: var(--green-soft); border-color: #bcd9c6; transform: translateY(-1px); }
+
+  /* ---------- 語言切換 ---------- */
+  .lang-switch {
+    display: flex; background: #fff; border: 1px solid var(--line);
+    border-radius: 999px; padding: 2px; gap: 2px;
+  }
+  .lang-switch button {
+    border: 0; background: transparent; color: var(--muted);
+    font-size: 12px; font-family: inherit; padding: 4px 10px;
+    border-radius: 999px; cursor: pointer; transition: .15s; white-space: nowrap;
+  }
+  .lang-switch button:hover { color: var(--green-dark); }
+  .lang-switch button.on {
+    background: var(--green); color: #fff; font-weight: 600;
+  }
+
+  /* ---------- 主佈局：左遊戲 / 右小科 ---------- */
+  .layout {
+    height: calc(100% - 60px);
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 402px;
+    gap: 14px;
+    padding: 0 14px 14px;
+    transition: grid-template-columns .28s ease;
+  }
+  .layout.chat-hidden { grid-template-columns: minmax(0, 1fr) 0px; }
+  .layout.chat-hidden .chat-col { display: none; }
+
+  .panel {
+    background: var(--cream);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    box-shadow: 0 8px 24px rgba(31,83,64,.07);
+    display: flex; flex-direction: column; min-height: 0; overflow: hidden;
+  }
+  .panel-head {
+    height: 44px; flex: 0 0 44px; display: flex; align-items: center;
+    justify-content: space-between; gap: 10px; padding: 0 12px;
+    border-bottom: 1px solid var(--line); background: #f7fbf7;
+  }
+  .panel-head h2 { margin: 0; font-size: 14px; font-weight: 700; letter-spacing: .3px; }
+  .panel-head h2 span { color: var(--muted); font-weight: 500; margin-left: 6px; }
+  .tools { display: flex; gap: 6px; }
+  .btn {
+    border: 1px solid var(--line); background: #fff; color: var(--green-dark);
+    font-size: 12px; padding: 5px 10px; border-radius: 999px; cursor: pointer;
+    font-family: inherit; transition: .15s; white-space: nowrap;
+  }
+  .btn:hover { background: var(--green-soft); border-color: #bcd9c6; }
+  .btn.ghost { color: var(--muted); }
+
+  /* ---------- 遊戲區 ---------- */
+  .game-box {
+    position: relative; flex: 1 1 auto; min-height: 0;
+    border-radius: 12px; margin: 10px 12px 6px;
+    background: #163b3b; overflow: hidden;
+  }
+  #gameFrame {
+    position: absolute; left: 0; top: 0;
+    width: 1280px; height: 720px;
+    border: 0; transform-origin: top left;
+  }
+  .game-hint {
+    flex: 0 0 auto; margin: 0 12px 10px; font-size: 12px; color: var(--muted);
+  }
+  .game-hint kbd {
+    background: #fff; border: 1px solid var(--line); border-bottom-width: 2px;
+    border-radius: 5px; padding: 1px 6px; font-size: 11px; font-family: inherit;
+  }
+  .loader {
+    position: absolute; inset: 0; display: flex; align-items: center;
+    justify-content: center; flex-direction: column; gap: 12px;
+    background: #163b3b; color: #d8ecdf; font-size: 13px; z-index: 3;
+    transition: opacity .4s; text-align: center; padding: 0 20px;
+  }
+  .loader.done { opacity: 0; pointer-events: none; }
+  .spinner {
+    width: 30px; height: 30px; border-radius: 50%;
+    border: 3px solid rgba(255,255,255,.2); border-top-color: #8fd6a8;
+    animation: spin 0.9s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* ---------- 小科區 ---------- */
+  #chatFrame { flex: 1 1 auto; width: 100%; border: 0; min-height: 0; background: #fff; }
+  .chat-tip {
+    flex: 0 0 auto; font-size: 11px; color: var(--muted); padding: 6px 12px 9px;
+    border-top: 1px solid var(--line); background: #f9fcf9;
+  }
+
+  /* ---------- 浮動地球頭像 ---------- */
+  .fab {
+    position: fixed; right: 22px; bottom: 22px; z-index: 40;
+    width: 68px; height: 68px; border-radius: 50%; border: 3px solid #fff;
+    background: #dff0e4 url("assets/mother-earth-avatar.png") center/cover no-repeat;
+    box-shadow: 0 10px 24px rgba(31,83,64,.28); cursor: pointer;
+    transition: transform .18s;
+  }
+  .fab:hover { transform: translateY(-3px) scale(1.04); }
+  .fab::after {
+    content: ""; position: absolute; inset: -6px; border-radius: 50%;
+    border: 2px solid rgba(47,122,91,.45); animation: pulse 2.4s ease-out infinite;
+  }
+  @keyframes pulse {
+    0% { transform: scale(.92); opacity: .85; }
+    70% { transform: scale(1.18); opacity: 0; }
+    100% { opacity: 0; }
+  }
+  .fab-label {
+    position: absolute; right: 78px; top: 50%; transform: translateY(-50%);
+    background: #fff; color: var(--green-dark); font-size: 12px; font-weight: 600;
+    padding: 6px 11px; border-radius: 999px; white-space: nowrap;
+    box-shadow: 0 4px 14px rgba(31,83,64,.16); opacity: 0; transition: .2s;
+    pointer-events: none;
+  }
+  .fab:hover .fab-label { opacity: 1; right: 82px; }
+
+  /* ---------- 說明／四色彈窗 ---------- */
+  .modal {
+    position: fixed; inset: 0; z-index: 50; display: none;
+    align-items: center; justify-content: center; padding: 24px;
+    background: rgba(20,45,36,.45); backdrop-filter: blur(3px);
+  }
+  .modal.open { display: flex; }
+  .modal-card {
+    background: var(--cream); border-radius: 18px; max-width: 560px; width: 100%;
+    max-height: 82vh; overflow: auto; padding: 22px 24px;
+    box-shadow: 0 24px 60px rgba(15,40,30,.3);
+  }
+  .modal-card.wide { max-width: 680px; }
+  .modal-card:focus { outline: none; }
+  .modal-card h3 { margin: 0 0 4px; font-size: 18px; }
+  .modal-card p { font-size: 13px; line-height: 1.75; color: #33544a; margin: 8px 0; }
+  .modal-card ul { font-size: 13px; line-height: 1.9; color: #33544a; padding-left: 20px; }
+  .modal-card .close-row { text-align: right; margin-top: 14px; }
+  .bin-row { display: flex; gap: 8px; margin: 10px 0 4px; flex-wrap: wrap; }
+  .bin {
+    flex: 1 1 100px; border-radius: 12px; padding: 8px 8px 10px; color: #fff;
+    font-size: 12px; font-weight: 600; text-align: center;
+  }
+  .bin img { width: 52px; height: 52px; display: block; margin: 0 auto 2px; object-fit: contain; }
+  .bin.b-paper { background: #3265ac; }
+  .bin.b-plastic { background: #e0b028; color: #3a2d05; }
+  .bin.b-metal { background: #8a5340; }
+  .bin.b-general { background: #34795d; }
+
+  .item-strip { display: flex; gap: 6px; flex-wrap: wrap; margin: 6px 0 2px; }
+  .item-strip figure {
+    margin: 0; width: 72px; text-align: center; font-size: 10px; color: #4a6a5e;
+    line-height: 1.35;
+  }
+  .item-strip img { width: 40px; height: 40px; object-fit: contain; }
+
+  /* ---------- 四色分類小百科 ---------- */
+  .bin-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 12px 0 4px; }
+  .bin-card {
+    border-radius: 14px; padding: 12px 14px; color: #fff; position: relative;
+    overflow: hidden;
+  }
+  .bin-card.paper { background: #3265ac; }
+  .bin-card.plastic { background: #e8b52c; color: #3a2d05; }
+  .bin-card.metal { background: #8a5340; }
+  .bin-card.general { background: #34795d; }
+  .bin-card .bh { display: flex; align-items: center; gap: 9px; }
+  .bin-card .bh img { width: 40px; height: 40px; object-fit: contain; }
+  .bin-card .bn { font-size: 15px; font-weight: 700; line-height: 1.2; }
+  .bin-card .bt { font-size: 11px; opacity: .88; margin-top: 1px; }
+  .bin-card .bd { font-size: 12.5px; line-height: 1.65; margin: 9px 0 0; }
+  .bin-card .bw {
+    font-size: 11.5px; line-height: 1.6; margin: 8px 0 0; padding-top: 8px;
+    border-top: 1px solid rgba(255,255,255,.35); opacity: .92;
+  }
+  .bin-card.plastic .bw { border-top-color: rgba(58,45,5,.25); }
+  @media (max-width: 520px) {
+    .bin-grid { grid-template-columns: 1fr; }
+  }
+
+  /* ---------- 窄螢幕：小科變成抽屜，遊戲改為固定 16:9 ---------- */
+  @media (max-width: 1080px) {
+    html, body { overflow-y: auto; }
+    .layout {
+      grid-template-columns: minmax(0, 1fr);
+      height: auto; min-height: calc(100% - 60px);
+      align-items: start;
+    }
+    .chat-col {
+      position: fixed; top: 0; right: 0; bottom: 0; width: min(94vw, 420px);
+      z-index: 45; border-radius: 0; border-left: 1px solid var(--line);
+      transform: translateX(105%); transition: transform .3s ease;
+      box-shadow: -12px 0 40px rgba(20,45,36,.18);
+    }
+    .layout.chat-open .chat-col { transform: translateX(0); }
+    .layout.chat-hidden .chat-col { display: flex; }
+    .layout.chat-hidden { grid-template-columns: minmax(0, 1fr); }
+    .brand .sub { display: none; }
+    .topbar { height: auto; padding: 10px 14px; flex-wrap: wrap; }
+    .layout { min-height: 0; }
+    .game-box { flex: 0 0 auto; aspect-ratio: 16 / 9; }
+    .fab { width: 58px; height: 58px; right: 16px; bottom: 16px; }
+  }
+
+  /* 手機：標題列改為可換行，按鈕縮小但不拆字 */
+  @media (max-width: 600px) {
+    .panel-head {
+      height: auto; flex: 0 0 auto; padding: 7px 10px;
+      flex-wrap: wrap; gap: 6px;
+    }
+    .panel-head h2 { font-size: 12px; }
+    .panel-head h2 span { margin-left: 4px; }
+    .tools { flex-wrap: nowrap; }
+    .btn { font-size: 11px; padding: 4px 9px; }
+    .badges { flex-wrap: wrap; gap: 6px; }
+    .layout { padding: 0 10px 10px; gap: 10px; }
+    /* 彈窗：外邊距收窄、底部留白加大，最後一張桶卡不會貼邊 */
+    .modal { padding: 14px; }
+    .modal-card {
+      padding: 16px 14px 22px; max-height: 88vh; border-radius: 16px;
+    }
+    .modal-card h3 { font-size: 16px; }
+    .bin-card { padding: 11px 12px; }
+
+    /* 手機：小科不再做全屏抽屜，改成內嵌在遊戲下方。
+       理由：豎屏 16:9 遊戲只佔上半屏，抽屜一開就蓋住畫面；
+       內嵌後往下滑就能問小科，收起時圓形頭像會重新出現。 */
+    .chat-col {
+      position: static; transform: none;
+      /* Gradio 內部內容實測約 603px（聊天區 460 + 輸入框），
+         面板矮於 690px 就會把輸入框裁到 iframe 之外，所以下限鎖 690。 */
+      width: 100%; height: min(78vh, 720px); min-height: 690px;
+      border-radius: var(--radius);
+      box-shadow: 0 8px 24px rgba(31,83,64,.07);
+    }
+    /* 滾動交還文檔層：body 自帶 100% 高 + overflow 會變成雙層滾動容器 */
+    html, body { height: auto; min-height: 100%; overflow: visible; }
+    .layout.chat-open .chat-col { transform: none; }
+    .layout.chat-hidden .chat-col { display: none; }
+    .fab { display: none; }
+    .layout.chat-hidden ~ .fab { display: flex; }
+  }
+</style>
+  <link rel="icon" href="assets/mother-earth-avatar.png">
+</head>
+<body>
+
+<header class="topbar">
+  <div class="brand">
+    <img src="assets/mother-earth-avatar.png" alt="Mother Earth">
+    <div>
+      <div class="title" id="brandTitle">地球媽媽拯救大作戰 <em>× 小科</em></div>
+      <div class="sub" id="brandSub">香港小四至小五｜垃圾分類 × 計算思維 × STEM 數字人</div>
+    </div>
+  </div>
+  <div class="badges">
+    <div class="lang-switch" id="langSwitch" role="group" aria-label="Language">
+      <button type="button" data-lang="hk">粵語</button>
+      <button type="button" data-lang="cn">普通話</button>
+      <button type="button" data-lang="en">English</button>
+    </div>
+    <button class="badge" id="btnBins" type="button">♻️ 四色分類</button>
+    <span class="badge" id="badgeChat">🤖 小科陪你</span>
+  </div>
+</header>
+
+<div class="layout" id="layout">
+
+  <!-- 左：遊戲 -->
+  <section class="panel">
+    <div class="panel-head">
+      <h2><span id="gameTitle">🎮 遊戲區</span> <span id="gameSub">第 0–4 關 · 課後小測</span></h2>
+      <div class="tools">
+        <button class="btn" id="btnReload">重新載入</button>
+        <button class="btn" id="btnFull">全螢幕</button>
+        <button class="btn ghost" id="btnHelp">玩法說明</button>
+      </div>
+    </div>
+    <div class="game-box" id="gameBox">
+      <div class="loader" id="loader">
+        <div class="spinner"></div>
+        <div id="loaderText">正在準備地球媽媽的遊戲世界…（首次載入約 10–20 秒）</div>
+      </div>
+      <iframe id="gameFrame" src="game/index.html" title="地球媽媽拯救大作戰"
+              allow="fullscreen; autoplay; clipboard-write"></iframe>
+    </div>
+    <p class="game-hint" id="gameHint">
+      提示：先點一下遊戲畫面，鍵盤才會生效 — <kbd>P</kbd> 暫停 ·
+      <kbd>R</kbd> 重玩 · <kbd>Esc</kbd> 返回選關。不懂就問右下角的小科 🌏
+    </p>
+  </section>
+
+  <!-- 右：小科數字人 -->
+  <aside class="panel chat-col" id="chatPanel">
+    <div class="panel-head">
+      <h2><span id="chatTitle">🌏 小科</span> <span id="chatSub">地球老師</span></h2>
+      <button class="btn ghost" id="btnCloseChat">收起 ✕</button>
+    </div>
+    <iframe id="chatFrame" src="xiaoke.html?lang=hk" title="小科數字人"
+            allow="autoplay; clipboard-write"></iframe>
+    <div class="chat-tip" id="chatTip">可以問「膠樽放邊個桶？」，或者話「我想被你考考」。</div>
+  </aside>
+</div>
+
+<button class="fab" id="fab" aria-label="ask Xiao Ke">
+  <span class="fab-label" id="fabLabel">問小科 🌏</span>
+</button>
+
+<!-- 玩法說明 -->
+<div class="modal" id="helpModal">
+  <div class="modal-card">
+    <div id="helpBody"></div>
+    <div class="close-row"><button class="btn" id="btnCloseHelp">明白啦</button></div>
+  </div>
+</div>
+
+<!-- 四色分類小百科 -->
+<div class="modal" id="binsModal">
+  <div class="modal-card wide">
+    <div id="binsBody"></div>
+    <div class="close-row"><button class="btn" id="btnCloseBins">明白啦</button></div>
+  </div>
+</div>
+
+<script>
+/* =========================================================================
+   一、三語文案（網頁介面）
+   hk = 粵語繁體、cn = 普通話簡體、en = English
+   ========================================================================= */
+const I18N = {
+  hk: {
+    pageTitle: "地球媽媽拯救大作戰 × 小科數字人",
+    brandTitle: "地球媽媽拯救大作戰 × 小科",
+    brandSub: "香港小四至小五｜垃圾分類 × 計算思維 × STEM 數字人",
+    binsBtn: "♻️ 四色分類",
+    badgeChat: "🤖 小科陪你",
+    gameTitle: "🎮 遊戲區",
+    gameSub: "第 0–4 關 · 課後小測",
+    reload: "重新載入",
+    full: "全螢幕",
+    help: "玩法說明",
+    loading: "正在準備地球媽媽的遊戲世界…（首次載入約 10–20 秒）",
+    gameHint: "提示：先點一下遊戲畫面，鍵盤才會生效 — <kbd>P</kbd> 暫停 · <kbd>R</kbd> 重玩 · <kbd>Esc</kbd> 返回選關。不懂就問右下角的小科 🌏",
+    chatTitle: "🌏 小科",
+    chatSub: "地球老師",
+    closeChat: "收起 ✕",
+    chatTip: "可以問「膠樽放邊個桶？」，或者話「我想被你考考」。",
+    fab: "問小科 🌏",
+    ok: "明白啦",
+    // 玩法說明
+    helpTitle: "玩法說明",
+    helpLead: "把傳送帶上的物品拖到正確的垃圾桶。放錯桶時，小芽會給你一個提示。",
+    helpItemsTitle: "會出現的物品",
+    helpItems: ["飲品膠樽", "洗頭水樽", "報紙", "紙箱", "書本", "鋁罐", "罐頭盒", "用過紙巾"],
+    helpRules: [
+      ["第 0 關", "膠樽入門：放對 1 件就過關。"],
+      ["第 1 關", "分類練習：放對 5 件。"],
+      ["第 2 關", "四桶挑戰：取得 150 分，並保留至少 1 點生命值。"],
+      ["第 3–4 關", "修程式：找出錯的「如果……就……」規則，改好再用三件物品驗證。"],
+      ["課後小測", "5 題，每題 20 分，輸入學號後開始。"],
+      ["教師模式", "主選單右下長按 2 秒，可任選關卡、開慢速、看報告、匯出 CSV。"]
+    ],
+    helpPrivacy: "小科只會在你主動問的時候出現；他不會看到你的學號或成績。",
+    // 四色分類
+    binsTitle: "♻️ 四色分類小百科",
+    binsLead: "判斷方法只有一個：先問「這件物品是用甚麼材料做的？」，再選對應顏色。",
+    bins: [
+      { key: "paper", color: "藍色桶", type: "廢紙",
+        body: "報紙、雜誌、紙箱、紙盒、作業簿、乾淨紙袋、辦公室用紙。",
+        note: "要乾淨、乾爽。有油污、沾了食物的紙巾和紙碟不算廢紙，請放綠桶。" },
+      { key: "plastic", color: "黃色桶", type: "膠樽／塑料",
+        body: "飲品膠樽、洗頭水樽、清潔劑膠樽、塑膠水杯、膠袋、發泡膠盒。",
+        note: "先倒清裡面的飲品、稍為沖一沖、壓扁再放入，可以慳位。" },
+      { key: "metal", color: "棕色桶", type: "金屬",
+        body: "鋁罐、汽水罐、罐頭盒、鐵罐、金屬蓋、乾淨的錫紙。",
+        note: "倒清食物殘渣。有尖銳邊緣的罐頭蓋請包好，避免割手。" },
+      { key: "general", color: "綠色桶", type: "一般垃圾",
+        body: "用過的紙巾、污糟的膠袋、發泡膠餐具、破爛的日用品。",
+        note: "不能回收的才放這裡。燈泡、電池、玻璃樽屬於特殊回收，交給老師或回收點。" }
+    ],
+    binsTip: "不確定的時候，先問老師或家人最準確 🌏"
+  },
+
+  cn: {
+    pageTitle: "地球妈妈拯救大作战 × 小科数字人",
+    brandTitle: "地球妈妈拯救大作战 × 小科",
+    brandSub: "香港小四至小五｜垃圾分类 × 计算思维 × STEM 数字人",
+    binsBtn: "♻️ 四色分类",
+    badgeChat: "🤖 小科陪你",
+    gameTitle: "🎮 游戏区",
+    gameSub: "第 0–4 关 · 课后小测",
+    reload: "重新加载",
+    full: "全屏",
+    help: "玩法说明",
+    loading: "正在准备地球妈妈的游戏世界…（首次加载约 10–20 秒）",
+    gameHint: "提示：先点一下游戏画面，键盘才会生效 — <kbd>P</kbd> 暂停 · <kbd>R</kbd> 重玩 · <kbd>Esc</kbd> 返回选关。不懂就问右下角的小科 🌏",
+    chatTitle: "🌏 小科",
+    chatSub: "地球老师",
+    closeChat: "收起 ✕",
+    chatTip: "可以问「塑料瓶放哪个桶？」，或者告诉我「我想被你考考」。",
+    fab: "问小科 🌏",
+    ok: "明白啦",
+    helpTitle: "玩法说明",
+    helpLead: "把传送带上的物品拖到正确的垃圾桶。放错桶时，小芽会给你一个提示。",
+    helpItemsTitle: "会出现的物品",
+    helpItems: ["饮料瓶", "洗发水瓶", "报纸", "纸箱", "书本", "铝罐", "罐头盒", "用过的纸巾"],
+    helpRules: [
+      ["第 0 关", "塑料瓶入门：放对 1 件就过关。"],
+      ["第 1 关", "分类练习：放对 5 件。"],
+      ["第 2 关", "四桶挑战：取得 150 分，并保留至少 1 点生命值。"],
+      ["第 3–4 关", "修程序：找出错的「如果……就……」规则，改好再用三件物品验证。"],
+      ["课后小测", "5 题，每题 20 分，输入学号后开始。"],
+      ["教师模式", "主菜单右下长按 2 秒，可任选关卡、开慢速、看报告、导出 CSV。"]
+    ],
+    helpPrivacy: "小科只会在你主动问的时候出现；他不会看到你的学号或成绩。",
+    binsTitle: "♻️ 四色分类小百科",
+    binsLead: "判断方法只有一个：先问「这件物品是什么材料做的？」，再选对应颜色。",
+    bins: [
+      { key: "paper", color: "蓝色桶", type: "废纸",
+        body: "报纸、杂志、纸箱、纸盒、作业本、干净纸袋、办公用纸。",
+        note: "要干净、干爽。有油污、沾了食物的纸巾和纸碟不算废纸，请放绿桶。" },
+      { key: "plastic", color: "黄色桶", type: "塑料瓶／塑料",
+        body: "饮料瓶、洗发水瓶、清洁剂瓶、塑料水杯、塑料袋、泡沫塑料盒。",
+        note: "先倒清里面的饮料、稍微冲一冲、压扁再放入，可以省空间。" },
+      { key: "metal", color: "棕色桶", type: "金属",
+        body: "铝罐、汽水罐、罐头盒、铁罐、金属盖、干净的锡纸。",
+        note: "倒清食物残渣。有尖锐边缘的罐头盖请包好，避免割手。" },
+      { key: "general", color: "绿色桶", type: "一般垃圾",
+        body: "用过的纸巾、脏的塑料袋、泡沫塑料餐具、破损的日用品。",
+        note: "不能回收的才放这里。灯泡、电池、玻璃瓶属于特殊回收，交给老师或回收点。" }
+    ],
+    binsTip: "不确定的时候，先问老师或家人最准确 🌏"
+  },
+
+  en: {
+    pageTitle: "Save Mother Earth × Xiao Ke",
+    brandTitle: "Save Mother Earth × Xiao Ke",
+    brandSub: "Hong Kong P4–P5 · Waste sorting × Computational thinking × STEM buddy",
+    binsBtn: "♻️ Four bins",
+    badgeChat: "🤖 Xiao Ke helps",
+    gameTitle: "🎮 Game",
+    gameSub: "Levels 0–4 · End-of-lesson quiz",
+    reload: "Reload",
+    full: "Fullscreen",
+    help: "How to play",
+    loading: "Getting Mother Earth's world ready… (about 10–20 seconds the first time)",
+    gameHint: "Tip: click the game area once so the keyboard works — <kbd>P</kbd> pause · <kbd>R</kbd> replay · <kbd>Esc</kbd> back to levels. Stuck? Ask Xiao Ke 🌏",
+    chatTitle: "🌏 Xiao Ke",
+    chatSub: "Mother Earth",
+    closeChat: "Hide ✕",
+    chatTip: "Try “Which bin for a plastic bottle?” or say “Quiz me”.",
+    fab: "Ask Xiao Ke 🌏",
+    ok: "Got it",
+    helpTitle: "How to play",
+    helpLead: "Drag the item on the conveyor belt into the correct bin. If you sort it wrongly, Sprout gives you a hint.",
+    helpItemsTitle: "Items you will see",
+    helpItems: ["Bottle", "Shampoo", "Newspaper", "Box", "Book", "Can", "Tin", "Tissue"],
+    helpRules: [
+      ["Level 0", "Bottles 101: sort 1 item correctly to pass."],
+      ["Level 1", "Sorting practice: sort 5 items correctly."],
+      ["Level 2", "Four-bin challenge: score 150 and keep at least 1 life."],
+      ["Levels 3–4", "Fix the code: find the wrong “if… then…” rule, fix it, then test with three items."],
+      ["Quiz", "5 questions, 20 points each. Enter your student ID to start."],
+      ["Teacher mode", "Hold for 2 seconds at the bottom right of the menu to open any level, use slow speed, view the report or export CSV."]
+    ],
+    helpPrivacy: "Xiao Ke only appears when you ask. It never sees your student ID or scores.",
+    binsTitle: "♻️ The four bins",
+    binsLead: "There is only one way to decide: ask “what material is it made of?”, then pick the matching colour.",
+    bins: [
+      { key: "paper", color: "Blue bin", type: "Paper",
+        body: "Newspaper, magazines, cardboard boxes, cartons, exercise books, clean paper bags, office paper.",
+        note: "It must be clean and dry. Greasy or food-stained tissue and paper plates are not paper — use the green bin." },
+      { key: "plastic", color: "Yellow bin", type: "Plastic bottles / plastic",
+        body: "Drink bottles, shampoo bottles, detergent bottles, plastic cups, plastic bags, foam boxes.",
+        note: "Empty the drink, rinse quickly and flatten it to save space." },
+      { key: "metal", color: "Brown bin", type: "Metal",
+        body: "Aluminium cans, soft drink cans, tin cans, metal lids, clean foil.",
+        note: "Empty out food scraps. Wrap lids with sharp edges so nobody gets cut." },
+      { key: "general", color: "Green bin", type: "General waste",
+        body: "Used tissue, dirty plastic bags, foam tableware, broken everyday items.",
+        note: "Only things that cannot be recycled go here. Bulbs, batteries and glass bottles are special collection — give them to your teacher." }
+    ],
+    binsTip: "If you are not sure, ask your teacher or family 🌏"
+  }
+};
+
+/* =========================================================================
+   二、語言切換
+   ========================================================================= */
+const LANG_KEY = 'edu_lang';
+const LANGS = ['hk', 'cn', 'en'];
+let lang = LANGS.includes(localStorage.getItem(LANG_KEY)) ? localStorage.getItem(LANG_KEY) : 'hk';
+
+const $ = (id) => document.getElementById(id);
+const T = (key) => (I18N[lang] && I18N[lang][key] !== undefined) ? I18N[lang][key] : I18N.hk[key];
+
+const gameFrame = $('gameFrame');
+const chatFrame = $('chatFrame');
+const layout = $('layout');
+const gameBox = $('gameBox');
+const loader = $('loader');
+
+/* 四色圖示檔名 */
+const BIN_IMG = {
+  paper: 'assets/paper.png',
+  plastic: 'assets/plastic.png',
+  metal: 'assets/metal.png',
+  general: 'assets/general.png'
+};
+const ITEM_IMG = [
+  'assets/items/drink-bottle.png', 'assets/items/shampoo-bottle.png',
+  'assets/items/newspaper.png', 'assets/items/cardboard-box.png',
+  'assets/items/book.png', 'assets/items/aluminium-can.png',
+  'assets/items/tin-can.png', 'assets/items/used-tissue.png'
+];
+
+/* 玩法說明彈窗內容（三語共用結構，文字取自 I18N） */
+function renderHelp() {
+  const names = { hk: ['藍桶 · 廢紙', '黃桶 · 膠樽', '棕桶 · 金屬', '綠桶 · 一般垃圾'],
+                  cn: ['蓝桶 · 废纸', '黄桶 · 塑料瓶', '棕桶 · 金属', '绿桶 · 一般垃圾'],
+                  en: ['Blue · Paper', 'Yellow · Plastic', 'Brown · Metal', 'Green · General'] }[lang];
+  const items = T('helpItems');
+  $('helpBody').innerHTML = `
+    <h3>${T('helpTitle')}</h3>
+    <p>${T('helpLead')}</p>
+    <div class="bin-row">
+      ${['paper','plastic','metal','general'].map((k, i) =>
+        `<div class="bin b-${k}"><img src="${BIN_IMG[k]}" alt=""><span>${names[i]}</span></div>`).join('')}
+    </div>
+    <p style="margin-top:12px"><b>${T('helpItemsTitle')}</b></p>
+    <div class="item-strip">
+      ${items.map((name, i) => `<figure><img src="${ITEM_IMG[i]}" alt=""><figcaption>${name}</figcaption></figure>`).join('')}
+    </div>
+    <ul>${T('helpRules').map(([k, v]) => `<li><b>${k}</b>　${v}</li>`).join('')}</ul>
+    <p style="color:var(--muted)">${T('helpPrivacy')}</p>`;
+}
+
+/* 四色分類小百科（右上角按鈕彈出） */
+function renderBins() {
+  const rows = T('bins').map((b) => `
+    <div class="bin-card ${b.key}">
+      <div class="bh">
+        <img src="${BIN_IMG[b.key]}" alt="">
+        <div>
+          <div class="bn">${b.color}</div>
+          <div class="bt">${b.type}</div>
+        </div>
+      </div>
+      <p class="bd">${b.body}</p>
+      <p class="bw">💡 ${b.note}</p>
+    </div>`).join('');
+  $('binsBody').innerHTML = `
+    <h3>${T('binsTitle')}</h3>
+    <p>${T('binsLead')}</p>
+    <div class="bin-grid">${rows}</div>
+    <p style="color:var(--muted);font-size:12px">${T('binsTip')}</p>`;
+}
+
+function applyLang(code, opts) {
+  opts = opts || {};
+  lang = LANGS.includes(code) ? code : 'hk';
+  localStorage.setItem(LANG_KEY, lang);
+  document.documentElement.lang = lang === 'en' ? 'en' : (lang === 'cn' ? 'zh-Hans' : 'zh-Hant-HK');
+  document.title = T('pageTitle');
+
+  $('brandTitle').innerHTML = T('brandTitle').replace('× 小科', '<em>× 小科</em>');
+  $('brandSub').textContent = T('brandSub');
+  $('btnBins').textContent = T('binsBtn');
+  $('badgeChat').textContent = T('badgeChat');
+  $('gameTitle').textContent = T('gameTitle');
+  $('gameSub').textContent = T('gameSub');
+  $('btnReload').textContent = T('reload');
+  $('btnFull').textContent = T('full');
+  $('btnHelp').textContent = T('help');
+  $('loaderText').textContent = T('loading');
+  $('gameHint').innerHTML = T('gameHint');
+  $('chatTitle').textContent = T('chatTitle');
+  $('chatSub').textContent = T('chatSub');
+  $('btnCloseChat').textContent = T('closeChat');
+  $('chatTip').textContent = T('chatTip');
+  $('fabLabel').textContent = T('fab');
+  $('btnCloseHelp').textContent = T('ok');
+  $('btnCloseBins').textContent = T('ok');
+
+  document.querySelectorAll('#langSwitch button').forEach((b) => {
+    b.classList.toggle('on', b.dataset.lang === lang);
+  });
+
+  renderHelp();
+  renderBins();
+
+  /* 小科有三個語言版本，各自一個網址；換語言就換 iframe。 */
+  const want = 'xiaoke.html?lang=' + lang;
+  if (!chatFrame.src.includes('xiaoke.html?lang=' + lang)) {
+    chatFrame.src = want;
+    setTimeout(refreshChat, 900);
+  }
+
+  /* 遊戲不必重載：它在主迴圈裡每 20 幀讀一次 localStorage 的 edu_lang，
+     所以這裡寫入的值會在零點幾秒內生效，學生的關卡進度也不會中斷。 */
+}
+
+document.querySelectorAll('#langSwitch button').forEach((btn) => {
+  btn.addEventListener('click', () => applyLang(btn.dataset.lang));
+});
+
+/* =========================================================================
+   三、版面與互動
+   ========================================================================= */
+const W = 1280, H = 720;
+
+/* 把 1280×720 的遊戲畫面等比縮放到容器內（不裁切、不留黑邊）。 */
+function fitGame() {
+  const box = gameBox.getBoundingClientRect();
+  if (!box.width || !box.height) return;
+  const scale = Math.min(box.width / W, box.height / H);
+  const dx = (box.width - W * scale) / 2;
+  const dy = (box.height - H * scale) / 2;
+  gameFrame.style.transform = `translate(${dx}px, ${dy}px) scale(${scale})`;
+}
+window.addEventListener('resize', fitGame);
+document.addEventListener('fullscreenchange', () => setTimeout(fitGame, 120));
+fitGame();
+setInterval(fitGame, 800);           // 面板收合有動畫，補幾次校正
+
+/* 遊戲載入完成後淡出遮罩（pygbag 會把 canvas 顯示出來）。 */
+gameFrame.addEventListener('load', () => {
+  setTimeout(() => loader.classList.add('done'), 1200);
+});
+setTimeout(() => loader.classList.add('done'), 25000);
+
+/* 收起／展開小科：寬螢幕收合右欄，平板是抽屜，手機（≤600px）是內嵌 */
+$('fab').addEventListener('click', () => {
+  const phone = window.matchMedia('(max-width: 600px)').matches;
+  const narrow = window.matchMedia('(max-width: 1080px)').matches;
+  if (phone) {
+    /* 內嵌佈局：收起狀態＝chat-hidden，點頭像就把它放回文件流 */
+    layout.classList.remove('chat-hidden');
+    refreshChat();
+  } else if (narrow) {
+    layout.classList.toggle('chat-open');
+  } else {
+    const hidden = layout.classList.toggle('chat-hidden');
+    if (!hidden) refreshChat();
+  }
+});
+$('btnCloseChat').addEventListener('click', () => {
+  const phone = window.matchMedia('(max-width: 600px)').matches;
+  const narrow = window.matchMedia('(max-width: 1080px)').matches;
+  if (phone) layout.classList.add('chat-hidden');
+  else if (narrow) layout.classList.remove('chat-open');
+  else layout.classList.add('chat-hidden');
+  setTimeout(fitGame, 320);
+});
+
+/* 重新載入遊戲（學生卡住或想重設畫面時用） */
+$('btnReload').addEventListener('click', () => {
+  loader.classList.remove('done');
+  gameFrame.src = 'game/index.html?t=' + Date.now();
+  setTimeout(() => loader.classList.add('done'), 1200);
+});
+
+/* 全螢幕只放大遊戲區，不會影響右邊的小科 */
+$('btnFull').addEventListener('click', () => {
+  if (document.fullscreenElement) document.exitFullscreen();
+  else gameBox.requestFullscreen?.().catch(() => {});
+});
+
+/* 兩個彈窗：玩法說明、四色分類 */
+const helpModal = $('helpModal');
+const binsModal = $('binsModal');
+
+/* 遊戲 iframe 會自己搶焦點，焦點一旦落在 iframe 內，主文檔就收不到 Esc。
+   所以開窗時把焦點移進彈窗卡片，關窗後再盡量還給遊戲（失敗也不影響）。 */
+function openModal(m) {
+  m.classList.add('open');
+  const card = m.querySelector('.modal-card');
+  if (card) {
+    card.setAttribute('tabindex', '-1');
+    card.focus({ preventScroll: true });
+  }
+}
+function closeModal(m) {
+  m.classList.remove('open');
+  try { gameFrame.contentWindow.focus(); } catch (err) { /* 跨域或被沙箱擋住就算了 */ }
+}
+
+$('btnHelp').addEventListener('click', () => openModal(helpModal));
+$('btnCloseHelp').addEventListener('click', () => closeModal(helpModal));
+helpModal.addEventListener('click', (e) => { if (e.target === helpModal) closeModal(helpModal); });
+
+$('btnBins').addEventListener('click', () => openModal(binsModal));
+$('btnCloseBins').addEventListener('click', () => closeModal(binsModal));
+binsModal.addEventListener('click', (e) => { if (e.target === binsModal) closeModal(binsModal); });
+
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') {
+    if (helpModal.classList.contains('open')) closeModal(helpModal);
+    else if (binsModal.classList.contains('open')) closeModal(binsModal);
+  }
+});
+
+/* Gradio 在 iframe 內會自帶標題列與頁尾，這裡同源移除，讓面板更乾淨。 */
+function refreshChat() {
+  try {
+    const doc = chatFrame.contentDocument;
+    if (!doc || !doc.head) return;
+    if (!doc.getElementById('embed-fix')) {
+      const style = doc.createElement('style');
+      style.id = 'embed-fix';
+      style.textContent = [
+        'footer{display:none!important}',
+        '.gradio-container{padding:0!important;max-width:100%!important}',
+        '#xiaoke-header{display:none!important}',   /* 外層已有標題，避免重複 */
+        '.examples{display:none!important}',
+        'gradio-app{display:block;height:100%!important}',
+      ].join('\n');
+      doc.head.appendChild(style);
+    }
+  } catch (e) { /* 跨來源時略過 */ }
+}
+chatFrame.addEventListener('load', () => { setTimeout(refreshChat, 600); });
+setTimeout(refreshChat, 2500);
+
+/* 啟動：套用上次選的語言（預設粵語） */
+applyLang(lang, { silent: true });
+</script>
+</body>
+</html>

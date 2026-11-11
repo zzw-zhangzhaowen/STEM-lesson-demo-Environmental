@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>小科 · 地球媽媽數字人</title>
+<link rel="icon" href="assets/mother-earth-avatar.png">
+<link rel="stylesheet" href="xiaoke.css">
+</head>
+<body>
+<div class="app">
+
+  <header class="top">
+    <img class="top-avatar" src="assets/mother-earth-avatar.png" alt="小科">
+    <div class="who">
+      <div class="line1">
+        <b class="name" id="xkName">小科</b>
+        <span class="tag" id="xkTag">離線版</span>
+      </div>
+      <div class="sub" id="xkSub">香港小五 STEM · 垃圾分類與計算思維</div>
+    </div>
+    <button class="reset" id="btnReset" type="button" title="重新開始">↺</button>
+  </header>
+
+  <main class="log" id="log" aria-live="polite" aria-label="對話"></main>
+
+  <div class="chips" id="chips"></div>
+
+  <form class="composer" id="composer" autocomplete="off">
+    <textarea id="input" rows="1" placeholder="問我垃圾分類的問題…" aria-label="輸入問題"></textarea>
+    <button class="send" id="btnSend" type="submit" aria-label="送出">
+      <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
+        <path d="M3.4 20.4 21 12 3.4 3.6 3.4 10l12 2-12 2z" fill="currentColor"/>
+      </svg>
+    </button>
+  </form>
+
+</div>
+
+<script src="xiaoke-data.js"></script>
+<script src="xiaoke.js"></script>
+</body>
+</html>
