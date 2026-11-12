@@ -1,7 +1,7 @@
 /* 由 工具-從6064重新生成.py 自動產生，請勿手改。 */
 window.XK_DATA = {
  "_meta": {
-  "source": "D:\\Wen\\EduHK\\6064\\FINAL\\earth-hk-combined",
+  "source": "D:\\Wen\\EduHK\\6064\\FINAL\\earth-hk-combined\\project",
   "kb_items": 46,
   "quiz": 28,
   "faq": 27,
@@ -2493,6 +2493,158 @@ window.XK_DATA = {
   "hk": "同學你好呀，你想找地球老師問問題，還是想讓地球老師考考你呢？",
   "cn": "同学你好呀，你想找地球老师问问题，还是想让地球老师考考你呢？",
   "en": "Hello there! Would you like to ask Mother Earth a question, or would you like her to quiz you?"
+ },
+ "thought_text": {
+  "hk": {
+   "title": "🧠 小科是怎樣想到的？",
+   "thinking": "🤔 小科思考中…",
+   "note": "以下係小科實際行過嘅步驟；離線版由規則引擎產生，唔係預先寫好嘅答案。",
+   "mode_llm_note": "以下係本地知識庫嘅檢索結果同回答框架；文字由模型組織。",
+   "step_lang": "① 聽懂語言：{v}",
+   "step_intent": "② 判斷問題類型：{v}",
+   "step_lookup": "③ 查知識庫：{v}",
+   "step_rule": "④ 套用規則：{v}",
+   "step_compose": "⑤ 組織回答：{v}",
+   "lang_names": {
+    "hk": "粵語（繁體）",
+    "cn": "普通話（簡體）",
+    "en": "English"
+   },
+   "intents": {
+    "greet": "打招呼",
+    "privacy": "保護個人資料",
+    "comfort": "情緒支援",
+    "quiz": "想被考一考",
+    "answer": "回答上一條考題",
+    "who": "問小科係邊個",
+    "cap": "問小科識做乜",
+    "four": "四色桶總覽",
+    "debug": "程式條件／除錯",
+    "item": "查一件物品",
+    "level": "問關卡點過",
+    "faq": "查知識庫 FAQ",
+    "fallback": "範圍外嘅問題"
+   },
+   "hit_item": "命中詞條「{item}」→ {color}{bin}",
+   "hit_special": "命中詞條「{item}」→ 特殊回收點，唔入四色桶",
+   "hit_faq": "最相近嘅知識庫條目「{q}」",
+   "hit_none": "冇對應詞條，用固定話術兜底",
+   "no_lookup": "呢題唔使查詞庫，直接用角色設定／固定話術",
+   "rules": {
+    "item": "四色回收桶對照表：物料 → 桶",
+    "special": "特殊回收規則：唔入四色桶，要去回收點",
+    "faq": "知識庫 FAQ 嘅標準答案",
+    "level": "第 {level} 關提示表",
+    "quiz": "題庫抽題／批改規則",
+    "other": "角色設定同安全界線"
+   },
+   "composes": {
+    "item": "用一句小朋友聽得明嘅話，講清楚邊個桶同點解",
+    "faq": "直接引用知識庫答案，唔加估測",
+    "quiz": "出題或批改，再補一句原因",
+    "other": "跟返提問嘅語言，簡短回覆"
+   }
+  },
+  "cn": {
+   "title": "🧠 小科是怎么想到的？",
+   "thinking": "🤔 小科思考中…",
+   "note": "以下是小科实际走过的步骤；离线版由规则引擎产生，不是预先写好的答案。",
+   "mode_llm_note": "以下是本地知识库的检索结果与回答框架；文字由模型组织。",
+   "step_lang": "① 听懂语言：{v}",
+   "step_intent": "② 判断问题类型：{v}",
+   "step_lookup": "③ 查知识库：{v}",
+   "step_rule": "④ 套用规则：{v}",
+   "step_compose": "⑤ 组织回答：{v}",
+   "lang_names": {
+    "hk": "粤语（繁体）",
+    "cn": "普通话（简体）",
+    "en": "English"
+   },
+   "intents": {
+    "greet": "打招呼",
+    "privacy": "保护个人资料",
+    "comfort": "情绪支持",
+    "quiz": "想被考一考",
+    "answer": "回答上一道考题",
+    "who": "问小科是谁",
+    "cap": "问小科会做什么",
+    "four": "四色桶总览",
+    "debug": "程序条件／调试",
+    "item": "查一件物品",
+    "level": "问关卡怎么过",
+    "faq": "查知识库 FAQ",
+    "fallback": "范围外的问题"
+   },
+   "hit_item": "命中词条「{item}」→ {color}{bin}",
+   "hit_special": "命中词条「{item}」→ 特殊回收点，不进四色桶",
+   "hit_faq": "最接近的知识库条目「{q}」",
+   "hit_none": "没有对应词条，用固定话术兜底",
+   "no_lookup": "这题不用查词库，直接用角色设定／固定话术",
+   "rules": {
+    "item": "四色回收桶对照表：物料 → 桶",
+    "special": "特殊回收规则：不进四色桶，要去回收点",
+    "faq": "知识库 FAQ 的标准答案",
+    "level": "第 {level} 关提示表",
+    "quiz": "题库抽题／批改规则",
+    "other": "角色设定与安全界线"
+   },
+   "composes": {
+    "item": "用一句小朋友听得懂的话，说清楚哪个桶和为什么",
+    "faq": "直接引用知识库答案，不加猜测",
+    "quiz": "出题或批改，再补一句原因",
+    "other": "跟随提问的语言，简短回复"
+   }
+  },
+  "en": {
+   "title": "🧠 How did Xiao Ke work that out?",
+   "thinking": "🤔 Xiao Ke is thinking…",
+   "note": "These are the real steps the rule engine took — not a pre-written answer.",
+   "mode_llm_note": "These are local knowledge-base lookups and the answer framework; the model writes the wording.",
+   "step_lang": "① Detect the language: {v}",
+   "step_intent": "② Classify the question: {v}",
+   "step_lookup": "③ Look it up: {v}",
+   "step_rule": "④ Apply a rule: {v}",
+   "step_compose": "⑤ Shape the answer: {v}",
+   "lang_names": {
+    "hk": "Cantonese (Traditional)",
+    "cn": "Mandarin (Simplified)",
+    "en": "English"
+   },
+   "intents": {
+    "greet": "greeting",
+    "privacy": "protecting personal data",
+    "comfort": "emotional support",
+    "quiz": "asking for a quiz",
+    "answer": "answering the last quiz",
+    "who": "who am I",
+    "cap": "what can I do",
+    "four": "four coloured bins",
+    "debug": "code / debugging",
+    "item": "looking up an item",
+    "level": "level hint",
+    "faq": "knowledge-base FAQ",
+    "fallback": "out-of-scope question"
+   },
+   "hit_item": "Matched item “{item}” → {color} {bin}",
+   "hit_special": "Matched item “{item}” → special drop-off, not one of the four bins",
+   "hit_faq": "Closest knowledge-base entry “{q}”",
+   "hit_none": "No matching entry; using a safe fallback",
+   "no_lookup": "No lookup needed — using the role setting / fixed wording",
+   "rules": {
+    "item": "Four-bin table: material → bin",
+    "special": "Special drop-off rule: not one of the four bins",
+    "faq": "Standard knowledge-base answer",
+    "level": "Hint table for level {level}",
+    "quiz": "Quiz bank / marking rule",
+    "other": "Role setting and safety boundaries"
+   },
+   "composes": {
+    "item": "One child-friendly sentence: which bin and why",
+    "faq": "Quote the knowledge base, no guessing",
+    "quiz": "Ask or mark the quiz, then add one reason",
+    "other": "Reply briefly in the language of the question"
+   }
+  }
  },
  "patterns": {
   "quiz": "考我|考考|出題|出题|測試我|测试我|問我|小測|小测|quiz|test me|ask me",

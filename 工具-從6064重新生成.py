@@ -21,7 +21,8 @@ import shutil
 import sys
 from pathlib import Path
 
-SRC = Path(r"D:/Wen/EduHK/6064/FINAL/earth-hk-combined")
+# 6064 已整理成「外面只留一鍵開啟」，所有原始檔都在 project/ 裡。
+SRC = Path(r"D:/Wen/EduHK/6064/FINAL/earth-hk-combined/project")
 DST = Path(__file__).resolve().parent
 WEB = SRC / "web"
 
@@ -63,6 +64,7 @@ def build_data(app) -> dict:
         "kb_faq": [list(pair) for pair in app.KB_FAQ],
         "ui_text": app.UI_TEXT,
         "openings": app.OPENINGS,
+        "thought_text": app.THOUGHT_TEXT,   # 思考過程三語文案（與 Python 版同源）
         "patterns": {
             "quiz": app.PAT_QUIZ.pattern,
             "four": app.PAT_FOUR.pattern,

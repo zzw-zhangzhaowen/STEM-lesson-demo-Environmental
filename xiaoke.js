@@ -362,23 +362,42 @@
     };
   }
 
-  function reply(message, history, lang) {
+  function reply(message, history, lang, steps) {
     const text = String(message || '').trim();
     const tpl = D.offline_text[lang] || D.offline_text.hk;
     const copy = copyOf(lang);
     history = history || [];
 
+    // 思考過程：把「這次真正走過的判定」記進 steps，不改動回覆內容。
+    // 6064 的 Gradio 版用的是同一套順序，兩邊展示的步驟才會一致。
+    const mark = (key, val) => { if (steps) steps.push([key, val]); };
+    const TT = D.thought_text || {};
+    const langNames = (TT[lang] || TT.hk || {}).lang_names || {};
+    mark('lang', langNames[lang] || lang);
+
     // 打招呼：短句才算，避免「你好，膠樽放邊個桶？」被吃掉
-    if (R_GREET.test(text) && text.length <= 12 && !lookupItem(text, lang)) return tpl.greet;
+    if (R_GREET.test(text) && text.length <= 12 && !lookupItem(text, lang)) {
+      mark('intent', 'greet');
+      return tpl.greet;
+    }
 
     // 安全界線：不要收集個人資料
-    if (R_PRIVACY.test(text)) return copy.privacy || tpl.fallback;
+    if (R_PRIVACY.test(text)) {
+      mark('intent', 'privacy');
+      return copy.privacy || tpl.fallback;
+    }
 
     // 情緒支援：先安慰，再鼓勵找老師／家人（正式版 prompt 的界線）
-    if (R_EMOTION.test(text)) return copy.comfort || tpl.fallback;
+    if (R_EMOTION.test(text)) {
+      mark('intent', 'comfort');
+      return copy.comfort || tpl.fallback;
+    }
 
     // 想被考
-    if (R_QUIZ.test(text)) return askQuiz(lang, tpl);
+    if (R_QUIZ.test(text)) {
+      mark('intent', 'quiz');
+      return askQuiz(lang, tpl);
+    }
 
     // 上一句是考題 → 這句當作答（題目在 lastQuiz，或從對話紀錄反查）
     const quiz = lastQuiz || quizFromHistory(history);
@@ -389,6 +408,7 @@
           !R_DEBUG.test(text) && !R_FOUR.test(text)) ||
         /唔知|不知道|不知道呀|no idea|dunno|not sure|guess/i.test(text);
       if (looksAnswer) {
+        mark('intent', 'answer');
         const result = judgeQuiz(text, quiz, lang, tpl);
         if (!result.keep) lastQuiz = null;
         return result.text;
@@ -396,16 +416,24 @@
     }
 
     // 身份與能力（正式版的角色設定）
-    if (R_WHO.test(text)) return copy.who || tpl.greet;
-    if (R_CAP.test(text)) return copy.capabilities || tpl.four_bins;
+    if (R_WHO.test(text)) {
+      mark('intent', 'who');
+      return copy.who || tpl.greet;
+    }
+    if (R_CAP.test(text)) {
+      mark('intent', 'cap');
+      return copy.capabilities || tpl.four_bins;
+    }
 
     // 四色總覽：句中有具體物品時先答物品（英文 "which bin" 會命中四色規則）
     if (R_FOUR.test(text) && !lookupItem(text, lang)) {
+      mark('intent', 'four');
       return copy.four_bins_detail || tpl.four_bins;
     }
 
     // 條件判斷／除錯：只有這裡會出現程式碼，並用 details 做「點擊翻譯」
     if (R_DEBUG.test(text) || R_DEBUG_EN.test(text)) {
+      mark('intent', 'debug');
       return (R_AND.test(text) && copy.debug_and) ? copy.debug_and : tpl.debug;
     }
 
@@ -413,6 +441,8 @@
     if (found) {
       const code = found[0];
       const name = found[1];
+      mark('intent', 'item');
+      mark('lookup', ['item', code, name]);
       if (code === 'special') return specialReply(name, lang, copy);
       const sentence = fill(tpl.item, {
         item: itemLabel(name, lang),
@@ -423,19 +453,106 @@
       return sentence.charAt(0).toUpperCase() + sentence.slice(1);
     }
 
+    mark('lookup', ['none']);
+
     // 關卡提示：先於 FAQ，否則「第 5 關點過」會誤中「150 分」那條 FAQ
     const level = text.match(LEVEL_RE);
     if (level) {
       const raw = level[1] || level[2];
       const key = LEVEL_MAP[raw] || raw;
       const hints = HINTS[lang] || D.level_hints;
-      if (Object.prototype.hasOwnProperty.call(hints, key)) return hints[key];
+      if (Object.prototype.hasOwnProperty.call(hints, key)) {
+        mark('intent', 'level');
+        mark('lookup', ['level', key]);
+        return hints[key];
+      }
     }
 
     const faq = kbFaqAnswer(text, lang);
-    if (faq) return faq;
+    if (faq) {
+      mark('intent', 'faq');
+      mark('lookup', ['faq', faqQuestionOf(faq, lang)]);
+      return faq;
+    }
 
+    mark('intent', 'fallback');
     return tpl.fallback;
+  }
+
+  function faqQuestionOf(answer, lang) {
+    const table = FAQ_TABLE[lang] || D.kb_faq;
+    for (let i = 0; i < table.length; i += 1) {
+      if (table[i][1] === answer) return table[i][0];
+    }
+    return '';
+  }
+
+  /* 把這次真實走過的判定，變成可摺疊的「思考過程」卡片。
+     文案全部來自 6064 的 THOUGHT_TEXT（由產生器寫進 xiaoke-data.js）。 */
+  function thoughtData(steps, lang) {
+    const TT = D.thought_text || {};
+    const t = TT[lang] || TT.hk;
+    if (!t) return { html: '', list: [] };
+    const last = (key) => {
+      const hits = (steps || []).filter((s) => s[0] === key);
+      return hits.length ? hits[hits.length - 1][1] : null;
+    };
+    const esc = (s) => String(s).replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;').replace(/>/g, '&gt;');
+
+    const langName = last('lang') || lang;
+    const intent = last('intent') || 'fallback';
+    const lookup = last('lookup') || ['skip'];   // skip = 這題根本唔使查詞庫
+    let lookupText = t.no_lookup || t.hit_none;
+    let rule = 'other';
+    let compose = 'other';
+
+    if (lookup[0] === 'none') {
+      lookupText = t.hit_none;
+    } else if (lookup[0] === 'item') {
+      const code = lookup[1];
+      const label = itemLabel(lookup[2], lang);
+      if (code === 'special') {
+        lookupText = fill(t.hit_special, { item: label });
+        rule = 'special';
+      } else {
+        lookupText = fill(t.hit_item, {
+          item: label,
+          color: (D.bin_name[lang] || D.bin_name.hk)[code],
+          bin: (D.bin_label[lang] || D.bin_label.hk)[code],
+        });
+        rule = 'item';
+      }
+      compose = 'item';
+    } else if (lookup[0] === 'faq') {
+      lookupText = fill(t.hit_faq, { q: lookup[1] || '' });
+      rule = 'faq';
+      compose = 'faq';
+    } else if (lookup[0] === 'level') {
+      lookupText = fill(t.rules.level, { level: lookup[1] });
+      rule = 'level';
+      compose = 'faq';
+    }
+    if (intent === 'quiz' || intent === 'answer') {
+      rule = 'quiz';
+      compose = 'quiz';
+    }
+
+    const list = [
+      fill(t.step_lang, { v: langName }),
+      fill(t.step_intent, { v: t.intents[intent] || intent }),
+      fill(t.step_lookup, { v: lookupText }),
+      fill(t.step_rule, { v: t.rules[rule] || t.rules.other }),
+      fill(t.step_compose, { v: t.composes[compose] || t.composes.other }),
+    ];
+    const html = "<details class='thought' open><summary>" + esc(t.title) +
+      '</summary><ol>' + list.map((s) => '<li>' + esc(s) + '</li>').join('') +
+      "</ol><p class='thought-note'>" + esc(t.note) + '</p></details>';
+    return { html: html, list: list };
+  }
+
+  function buildThought(steps, lang) {
+    return thoughtData(steps, lang).html;
   }
 
   /* =======================================================================
@@ -456,6 +573,7 @@
   window.XKEngine = {
     reply: reply, lookupItem: lookupItem, binAnswer: binAnswer,
     kbFaqAnswer: kbFaqAnswer, ratio: ratio, detectLang: detectLang,
+    thoughtData: thoughtData, buildThought: buildThought,
     quizPool: QUIZ_POOL, lang: uiLang, data: D,
   };
 
@@ -533,7 +651,8 @@
     avatar.alt = '小科';
     const bubble = document.createElement('div');
     bubble.className = 'bubble';
-    bubble.innerHTML = '<span class="typing"><i></i><i></i><i></i></span>';
+    bubble.innerHTML = '<span class="typing"><i></i><i></i><i></i></span>' +
+                       '<span class="typing-label"></span>';
     row.appendChild(avatar);
     row.appendChild(bubble);
     log.appendChild(row);
@@ -574,13 +693,23 @@
     setBusy(true);
 
     const typing = addTyping();
-    const answer = reply(text, history.slice(0, -1), replyLang);
+    const steps = [];
+    const answer = reply(text, history.slice(0, -1), replyLang, steps);
+    const thought = thoughtData(steps, replyLang);
+    const TT = (D.thought_text || {})[replyLang] || {};
+    const label = typing.querySelector('.typing-label');
+    if (label) label.textContent = TT.thinking || '';
 
-    // 一點延遲，讓「正在輸入」看得見；長回答等一下下，讀起來比較自然
-    const wait = 260 + Math.min(520, answer.length * 6);
+    // 「思考中」逐條亮出這次真正走過的步驟，最後換成答案＋可摺疊思考卡
+    const wait = 360 + Math.min(520, answer.length * 6);
+    thought.list.forEach((line, i) => {
+      setTimeout(() => {
+        if (typing.isConnected && label) label.textContent = line;
+      }, Math.min(140 + i * 150, Math.max(wait - 80, 0)));
+    });
     setTimeout(() => {
       typing.remove();
-      addRow('bot', answer);
+      addRow('bot', (thought.html ? thought.html + '\n\n' : '') + answer);
       history.push({ role: 'assistant', content: answer });
       setBusy(false);
       input.focus();
