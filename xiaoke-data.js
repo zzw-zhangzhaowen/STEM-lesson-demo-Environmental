@@ -2496,7 +2496,7 @@ window.XK_DATA = {
  },
  "thought_text": {
   "hk": {
-   "title": "🧠 小科是怎樣想到的？",
+   "title": "小科是怎麼思考的？",
    "thinking": "🤔 小科思考中…",
    "note": "以下係小科實際行過嘅步驟；離線版由規則引擎產生，唔係預先寫好嘅答案。",
    "mode_llm_note": "以下係本地知識庫嘅檢索結果同回答框架；文字由模型組織。",
@@ -2523,7 +2523,8 @@ window.XK_DATA = {
     "item": "查一件物品",
     "level": "問關卡點過",
     "faq": "查知識庫 FAQ",
-    "fallback": "範圍外嘅問題"
+    "fallback": "範圍外嘅問題",
+    "offtopic": "連續離題（防沉迷攔截）"
    },
    "hit_item": "命中詞條「{item}」→ {color}{bin}",
    "hit_special": "命中詞條「{item}」→ 特殊回收點，唔入四色桶",
@@ -2536,17 +2537,19 @@ window.XK_DATA = {
     "faq": "知識庫 FAQ 嘅標準答案",
     "level": "第 {level} 關提示表",
     "quiz": "題庫抽題／批改規則",
-    "other": "角色設定同安全界線"
+    "other": "角色設定同安全界線",
+    "offtopic": "防沉迷規則：連續 3 次無關話題 → 溫和帶回課程"
    },
    "composes": {
     "item": "用一句小朋友聽得明嘅話，講清楚邊個桶同點解",
     "faq": "直接引用知識庫答案，唔加估測",
     "quiz": "出題或批改，再補一句原因",
-    "other": "跟返提問嘅語言，簡短回覆"
+    "other": "跟返提問嘅語言，簡短回覆",
+    "offtopic": "用固定嘅溫柔話術，把話題帶返環保／垃圾分類"
    }
   },
   "cn": {
-   "title": "🧠 小科是怎么想到的？",
+   "title": "小科是怎么思考的？",
    "thinking": "🤔 小科思考中…",
    "note": "以下是小科实际走过的步骤；离线版由规则引擎产生，不是预先写好的答案。",
    "mode_llm_note": "以下是本地知识库的检索结果与回答框架；文字由模型组织。",
@@ -2573,7 +2576,8 @@ window.XK_DATA = {
     "item": "查一件物品",
     "level": "问关卡怎么过",
     "faq": "查知识库 FAQ",
-    "fallback": "范围外的问题"
+    "fallback": "范围外的问题",
+    "offtopic": "连续离题（防沉迷拦截）"
    },
    "hit_item": "命中词条「{item}」→ {color}{bin}",
    "hit_special": "命中词条「{item}」→ 特殊回收点，不进四色桶",
@@ -2586,17 +2590,19 @@ window.XK_DATA = {
     "faq": "知识库 FAQ 的标准答案",
     "level": "第 {level} 关提示表",
     "quiz": "题库抽题／批改规则",
-    "other": "角色设定与安全界线"
+    "other": "角色设定与安全界线",
+    "offtopic": "防沉迷规则：连续 3 次无关话题 → 温和带回课程"
    },
    "composes": {
     "item": "用一句小朋友听得懂的话，说清楚哪个桶和为什么",
     "faq": "直接引用知识库答案，不加猜测",
     "quiz": "出题或批改，再补一句原因",
-    "other": "跟随提问的语言，简短回复"
+    "other": "跟随提问的语言，简短回复",
+    "offtopic": "用固定的温柔话术，把话题带回环保／垃圾分类"
    }
   },
   "en": {
-   "title": "🧠 How did Xiao Ke work that out?",
+   "title": "How does Xiao Ke think?",
    "thinking": "🤔 Xiao Ke is thinking…",
    "note": "These are the real steps the rule engine took — not a pre-written answer.",
    "mode_llm_note": "These are local knowledge-base lookups and the answer framework; the model writes the wording.",
@@ -2623,7 +2629,8 @@ window.XK_DATA = {
     "item": "looking up an item",
     "level": "level hint",
     "faq": "knowledge-base FAQ",
-    "fallback": "out-of-scope question"
+    "fallback": "out-of-scope question",
+    "offtopic": "repeated off-topic chat (intercepted)"
    },
    "hit_item": "Matched item “{item}” → {color} {bin}",
    "hit_special": "Matched item “{item}” → special drop-off, not one of the four bins",
@@ -2636,16 +2643,24 @@ window.XK_DATA = {
     "faq": "Standard knowledge-base answer",
     "level": "Hint table for level {level}",
     "quiz": "Quiz bank / marking rule",
-    "other": "Role setting and safety boundaries"
+    "other": "Role setting and safety boundaries",
+    "offtopic": "Anti-boredom rule: 3 off-topic turns in a row → gently back to the lesson"
    },
    "composes": {
     "item": "One child-friendly sentence: which bin and why",
     "faq": "Quote the knowledge base, no guessing",
     "quiz": "Ask or mark the quiz, then add one reason",
-    "other": "Reply briefly in the language of the question"
+    "other": "Reply briefly in the language of the question",
+    "offtopic": "Use the fixed warm wording to bring the chat back to recycling"
    }
   }
  },
+ "offtopic_text": {
+  "hk": "哎呀，地球老師發現我哋好像傾咗好多其他好玩嘅嘢呢！不過我哋嘅地球媽媽仲等緊我哋去拯救、仲有好多垃圾分類嘅秘密未解開呢。不如我哋返轉頭傾下環保或者遊戲入面嘅科學問題啦，你想問邊個關卡呀？",
+  "cn": "哎呀，地球老师发现我们好像聊了好多其他好玩的事呢！不过我们的地球妈妈还在等着我们去拯救、还有好多垃圾分类的秘密没解开呢。不如我们先来讨论一下环保或者游戏里的科学问题吧，你想问哪个关卡呢？",
+  "en": "Oops! It looks like we've been chatting about other fun things for a while! But Mother Earth is still waiting for us to save her, and we still have some recycling secrets to unlock. Let's get back to our science and environmental topics—what level or question would you like to explore next?"
+ },
+ "offtopic_limit": 3,
  "patterns": {
   "quiz": "考我|考考|出題|出题|測試我|测试我|問我|小測|小测|quiz|test me|ask me",
   "four": "四色|四桶|什麼顏色|什么颜色|甚麼顏色|有幾多個桶|邊幾個桶|four bins?|which bins?|colour bins?|color bins?",

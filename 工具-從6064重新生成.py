@@ -65,6 +65,8 @@ def build_data(app) -> dict:
         "ui_text": app.UI_TEXT,
         "openings": app.OPENINGS,
         "thought_text": app.THOUGHT_TEXT,   # 思考過程三語文案（與 Python 版同源）
+        "offtopic_text": app.OFFTOPIC_TEXT,  # 防沉迷攔截三語話術（與 Python 版同一份）
+        "offtopic_limit": app.OFFTOPIC_LIMIT,   # 連續幾次離題才攔截（目前 3）
         "patterns": {
             "quiz": app.PAT_QUIZ.pattern,
             "four": app.PAT_FOUR.pattern,

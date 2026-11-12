@@ -181,7 +181,7 @@ body {
 }
 .bubble summary { cursor: pointer; color: var(--green-dark); font-weight: 600; }
 
-/* 思考過程卡：預設展開、可收起，視覺上跟「點擊翻譯」區分開 */
+/* 思考過程卡：預設收起（只露一行標題），學生點「小科是怎麼思考的？」才展開 */
 .bubble details.thought {
   margin: 0 0 10px;
   background: #f4faf6;

@@ -4,7 +4,7 @@
    沒有任何東西必須留在伺服器，所以整條鏈路搬到瀏覽器。
    資料由 `工具-從6064重新生成.py` 從 `app.py` / 知識庫抽出，兩邊同一份來源。
 
-   在此之上，這一版刻意「對齊」6064 正式版的系統提示詞，補了六件事
+   在此之上，這一版刻意「對齊」6064 正式版的系統提示詞，補了七件事
    （6064 的離線規則沒有、但模型版做得到的能力）：
      1. 語言自適應：按「用戶這次輸入的語言」回覆，不再綁死 UI 的 ?lang=
      2. 趣味小考官改用「現實生活進階題庫」，一題一判，答對／答錯都有原因與鼓勵
@@ -12,6 +12,8 @@
      4. 安全界線：情緒支援、不收集個人資料、離題溫柔帶回
      5. 四色總覽補上每桶的例子（報紙／紙箱／膠樽／鋁罐…）
      6. 代碼只在「分類條件／除錯」出現，並用 <details> 做「點擊翻譯」
+     7. 防沉迷：連續 3 次無關話題就溫和攔截，直到學生問回課程相關問題
+        （話術與 6064 的 OFFTOPIC_TEXT 同一份，由產生器寫入）
 
    對照關係（方便日後維護）：
      _item_label      → itemLabel()
@@ -19,7 +21,8 @@
      _lookup_item     → lookupItem()
      _bin_answer      → binAnswer()
      _kb_faq_answer   → kbFaqAnswer()
-     _offline_reply   → reply()（意圖順序有擴充，見上面六點）
+     _looks_offtopic  → looksOfftopic()（防沉迷：連續離題次數）
+     _offline_reply   → reply()（意圖順序有擴充，見上面七點）
 */
 (function () {
   'use strict';
@@ -293,6 +296,43 @@
     return '';
   }
 
+  /* =======================================================================
+     三·五、防沉迷：連續 3 次無關話題 → 溫和攔截
+     對齊 6064 的 `_looks_offtopic` / `_offtopic_streak` / `_intercept_due`：
+     離線版沒有模型自己數次數，就用「規則引擎接得住就不算離題」回頭掃紀錄。
+     ======================================================================= */
+  const OFFTOPIC_LIMIT = 3;
+
+  function looksOfftopic(text, lang) {
+    const s = String(text || '').trim();
+    if (!s) return false;
+    if (R_GREET.test(s)) return false;
+    if (R_PRIVACY.test(s) || R_EMOTION.test(s)) return false;
+    if (R_QUIZ.test(s) || R_WHO.test(s) || R_CAP.test(s)) return false;
+    if (R_FOUR.test(s) && !lookupItem(s, lang)) return false;
+    if (R_DEBUG.test(s) || R_DEBUG_EN.test(s)) return false;
+    if (binAnswer(s) !== null) return false;
+    if (lookupItem(s, lang)) return false;
+    if (LEVEL_RE.test(s)) return false;
+    if (kbFaqAnswer(s, lang)) return false;
+    return true;
+  }
+
+  function offtopicStreak(history, lang) {
+    let n = 0;
+    for (let i = (history || []).length - 1; i >= 0; i -= 1) {
+      if (history[i].role !== 'user') continue;
+      if (!looksOfftopic(String(history[i].content || ''), lang)) break;
+      n += 1;
+    }
+    return n;
+  }
+
+  function interceptText(lang) {
+    const table = D.offtopic_text || {};
+    return table[lang] || table.hk || '';
+  }
+
   // 遊戲外的物品：先講「不入四色桶」，再引導去回收點（正式版 prompt 的要求）
   function specialReply(name, lang, copy) {
     const body = fill(D.offline_special[lang] || D.offline_special.hk, {
@@ -476,6 +516,14 @@
     }
 
     mark('intent', 'fallback');
+    // 防沉迷：連續第 3 次無關話題就溫和攔截（對齊 6064 的 OFFTOPIC_TEXT）
+    if (offtopicStreak(history, lang) + 1 >= OFFTOPIC_LIMIT) {
+      const warning = interceptText(lang);
+      if (warning) {
+        mark('intent', 'offtopic');
+        return warning;
+      }
+    }
     return tpl.fallback;
   }
 
@@ -545,7 +593,7 @@
       fill(t.step_rule, { v: t.rules[rule] || t.rules.other }),
       fill(t.step_compose, { v: t.composes[compose] || t.composes.other }),
     ];
-    const html = "<details class='thought' open><summary>" + esc(t.title) +
+    const html = "<details class='thought'><summary>" + esc(t.title) +
       '</summary><ol>' + list.map((s) => '<li>' + esc(s) + '</li>').join('') +
       "</ol><p class='thought-note'>" + esc(t.note) + '</p></details>';
     return { html: html, list: list };
@@ -700,13 +748,8 @@
     const label = typing.querySelector('.typing-label');
     if (label) label.textContent = TT.thinking || '';
 
-    // 「思考中」逐條亮出這次真正走過的步驟，最後換成答案＋可摺疊思考卡
+    // 「思考中」只顯示一句，不再把五步逐條亮出來——思考過程要學生自己點開才看到
     const wait = 360 + Math.min(520, answer.length * 6);
-    thought.list.forEach((line, i) => {
-      setTimeout(() => {
-        if (typing.isConnected && label) label.textContent = line;
-      }, Math.min(140 + i * 150, Math.max(wait - 80, 0)));
-    });
     setTimeout(() => {
       typing.remove();
       addRow('bot', (thought.html ? thought.html + '\n\n' : '') + answer);
