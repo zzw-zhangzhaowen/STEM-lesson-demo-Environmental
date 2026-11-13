@@ -215,6 +215,9 @@ def build_index() -> None:
     html = html.replace('"/assets/', '"assets/').replace("'/assets/", "'assets/")
     html = html.replace('"/game/index.html"', '"game/index.html"')
     html = html.replace("'/game/index.html?t='", "'game/index.html?t='")
+    # 6064 的 iframe 帶了快取破壞參數（如 ?v=57b3f040a2e9），同樣要改成相對路徑。
+    # 用正規表達式處理，避免漏掉帶參數的寫法被下面的絕對路徑檢查擋下。
+    html = re.sub(r'(["\'])/game/index\.html(?=[?"\'])', r'\1game/index.html', html)
 
     left = sorted(set(re.findall(r'["\'](/(?:assets|game|xiaoke)[^"\']*)', html)))
     if left:
